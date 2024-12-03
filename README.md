@@ -1,99 +1,95 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# **find A Tutor**
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### **Project Overview**
 
-## Description
+**find A Tutor** is a dynamic platform designed to connect students with tutors in various fields of study. The system enables user registration, session booking, tutor management, and secure payment solutions. With a focus on efficiency and usability, **find A Tutor** streamlines the process of finding, verifying, and booking qualified tutors. The following documentation outlines the key features and functionalities of the application.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+### **Modules**
 
-```bash
-$ npm install
-```
+1. **Admin Module**
+2. **Student Module**
+3. **Tutor Module**
+4. **Session Management Module**
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+### **Features**
 
-# watch mode
-$ npm run start:dev
+#### **1. Registration**
 
-# production mode
-$ npm run start:prod
-```
+Users can register with the following roles:
 
-## Run tests
+- **Tutor**: Tutors register and provide credentials, which must be verified by the admin before being listed. Verified tutors can create profiles showcasing their expertise and availability.
+- **Student**: Students register to browse tutors, book sessions, and track their learning progress.
+- **Admin**: Admins oversee the platform, verifying tutors and managing system operations.
 
-```bash
-# unit tests
-$ npm run test
+#### **2. Login**
 
-# e2e tests
-$ npm run test:e2e
+- Role-based login for tutors, students, and admins.
+- Secure authentication ensures that each user has the appropriate level of access.
 
-# test coverage
-$ npm run test:cov
-```
+#### **3. Session Booking System**
 
-## Deployment
+##### **Session Scheduling:**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Students can browse verified tutors based on subject, location (for in-person sessions), or availability.
+- After selecting a tutor, students can book a session by specifying the time and date.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+##### **Online Session System:**
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+- Students can book online sessions with tutors and pay a specified fee through the platform.
+- Once payment is confirmed, a session link (e.g., Zoom, Google Meet) is generated and sent to the student, along with the session details.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+##### **Session Management:**
 
-## Resources
+- Students can reschedule or cancel sessions, with refund policies for cancellations made more than 24 hours before the session.
+- Reminders are sent to both students and tutors 24 hours before a scheduled session.
 
-Check out a few resources that may come in handy when working with NestJS:
+#### **4. Tutor Management**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- Tutors can update their profiles, including subjects, rates, availability, and certifications.
+- Verified tutors are listed on the platform and can accept or decline session requests.
 
-## Support
+#### **5. Admin Management**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Tutor Verification:** Admin verifies tutors’ credentials (e.g., certifications, experience) before approving them for public listing.
+- **Session Oversight:** Admins have access to all session details and can handle disputes between students and tutors.
+- **System Moderation:** Admins can manage user accounts, payment disputes, and platform content.
 
-## Stay in touch
+#### **6. Payment and Refund System**
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Secure payment integration allows students to pay for sessions during booking.
+- Payment confirmation is sent via email and SMS.
+- If a session is canceled more than 24 hours in advance, students are eligible for a refund.
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### **Workflow**
+
+1. **Student Registration**: Students create an account and can log in to browse and book tutors.
+2. **Tutor Registration and Verification**: Tutors register and submit credentials for verification. Once verified, their profiles are made public.
+3. **Session Booking**:
+   - Students select a tutor based on preferences and availability.
+   - Online sessions require upfront payment, after which a meeting link is shared with the student.
+4. **Session Confirmation**:
+   - Both student and tutor receive a session confirmation email and SMS notification.
+   - Reminders are sent 24 hours before the session.
+5. **Payment Processing**:
+   - Payments are securely processed through the platform.
+   - Refunds are initiated for cancellations that meet the policy criteria.
+6. **Admin Oversight**: Admins verify tutors, manage disputes, and monitor overall platform activities.
+
+---
+
+### **Technologies Used**
+
+- **Backend**: NestJS
+- **Database**: MongoDB
+- **Notifications**: Twilio
+- **Payment Gateway Integration**: JazzCash
+- **Authentication**: JWT (JSON Web Tokens)
+- **Video Conferencing**: VideoSDK (WebEx by cisco)
