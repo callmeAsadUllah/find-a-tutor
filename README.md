@@ -36,13 +36,13 @@ Users can register with the following roles:
 
 ##### **Session Scheduling:**
 
-- Students can browse verified tutors based on subject, location (for in-person sessions), or availability.
+- Students can browse verified tutors based on subject, or availability.
 - After selecting a tutor, students can book a session by specifying the time and date.
 
 ##### **Online Session System:**
 
 - Students can book online sessions with tutors and pay a specified fee through the platform.
-- Once payment is confirmed, a session link (e.g., Zoom, Google Meet) is generated and sent to the student, along with the session details.
+- Once payment is confirmed, a session link (e.g., WebEx, in-platform) is generated and sent to the student, along with the session details.
 
 ##### **Session Management:**
 
