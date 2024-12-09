@@ -10,7 +10,11 @@ import { JazzCashModule } from './modules/jazz-cash/jazz-cash.module';
 import { TutorsModule } from './modules/tutors/tutors.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PusherModule } from './modules/pusher/pusher.module';
+import { SeedersModule } from './modules/seeders/seeders.module';
+import { User, UserSchema } from './modules/users/user.schema';
+import { SubjectsService } from './modules/subjects/subjects.service';
+import { SubjectsController } from './modules/subjects/subjects.controller';
+import { SubjectsModule } from './modules/subjects/subjects.module';
 
 @Module({
   imports: [
@@ -19,12 +23,22 @@ import { PusherModule } from './modules/pusher/pusher.module';
       envFilePath: '.env',
       cache: true,
     }),
+
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
       inject: [ConfigService],
     }),
+    MongooseModule.forFeatureAsync([
+      {
+        name: User.name,
+        useFactory: () => {
+          return UserSchema;
+        },
+      },
+    ]),
+
     AuthModule,
     UsersModule,
     AdminModule,
@@ -32,9 +46,10 @@ import { PusherModule } from './modules/pusher/pusher.module';
     TwilioModule,
     JazzCashModule,
     TutorsModule,
-    PusherModule,
+    SeedersModule,
+    SubjectsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, SubjectsController],
+  providers: [AppService, SubjectsService],
 })
 export class AppModule {}

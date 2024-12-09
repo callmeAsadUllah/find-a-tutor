@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../users/user.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AdminSeeder } from './admin.seeder';
 
 @Module({
   imports: [
@@ -15,7 +14,7 @@ import { User, UserSchema } from '../users/user.schema';
       },
     ]),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AdminSeeder],
+  exports: [AdminSeeder],
 })
-export class AuthModule {}
+export class SeedersModule {}
