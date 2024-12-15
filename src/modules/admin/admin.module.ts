@@ -2,16 +2,19 @@ import { Module } from '@nestjs/common';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { UsersModule } from '../users/users.module';
-import { User, UserSchema } from '../users/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import {
+  AccountActivationRequest,
+  AccountActivationRequestSchema,
+} from './admin.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeatureAsync([
       {
-        name: User.name,
+        name: AccountActivationRequest.name,
         useFactory: () => {
-          return UserSchema;
+          return AccountActivationRequestSchema;
         },
       },
     ]),

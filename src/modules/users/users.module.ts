@@ -1,8 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module, OnModuleInit } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { User, UserSchema } from './user.schema';
+import {
+  Admin,
+  AdminSchema,
+  Student,
+  StudentSchema,
+  Tutor,
+  TutorSchema,
+  User,
+  UserSchema,
+} from './user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TwilioModule } from '../twilio/twilio.module';
 
 @Module({
   imports: [
@@ -10,13 +20,22 @@ import { MongooseModule } from '@nestjs/mongoose';
       {
         name: User.name,
         useFactory: () => {
-          return UserSchema;
+          const schema = UserSchema;
+          schema.discriminator(Student.name, StudentSchema);
+          schema.discriminator(Tutor.name, TutorSchema);
+          schema.discriminator(Admin.name, AdminSchema);
+          return schema;
         },
       },
     ]),
+    forwardRef(() => TwilioModule),
   ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule implements OnModuleInit {
+  onModuleInit() {
+    console.log('UsersModule initialized');
+  }
+}

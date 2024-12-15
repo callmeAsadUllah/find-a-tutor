@@ -1,5 +1,5 @@
-import { IUser } from 'src/modules/users/interfaces/user.interface';
+import { Types } from 'mongoose';
 
-export interface IAdmin extends IUser {
-  permissions: string[];
+export interface IAccountActivationRequest {
+  userId: Types.ObjectId;
 }

@@ -1,45 +1,106 @@
 import {
+  IsString,
+  IsOptional,
   IsEmail,
   IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
+  IsNumber,
+  IsBoolean,
+  IsArray,
+  IsMongoId,
 } from 'class-validator';
 import { Gender } from 'src/common/enums/gender.enum';
+import { Role } from 'src/common/enums/role.enum';
+import { Types } from 'mongoose';
 
-export class UserDto {
-  @IsNotEmpty()
-  @IsString()
-  username: string;
-
+export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  firstName?: string;
+  username?: string;
 
   @IsOptional()
-  @IsString()
-  lastName?: string;
-
-  @IsNotEmpty()
   @IsEmail()
-  email: string;
+  email?: string;
 
-  @IsNotEmpty()
-  @IsPhoneNumber()
-  phoneNumber: string;
-
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  password: string;
+  phoneNumber?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
+  password?: string;
+
+  @IsOptional()
   @IsEnum(Gender)
-  gender: Gender;
+  gender?: Gender;
 
-  subjects?: string[];
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 
-  hourlyRate?: number;
+  @IsOptional()
+  @IsString()
+  refreshToken?: string;
 
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isPhoneNumberVerified?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isEmailVerified?: boolean;
+}
+
+export class UpdateStudentDto extends UpdateUserDto {
+  @IsOptional()
+  @IsString()
   grade?: string;
+
+  @IsOptional()
+  @IsArray()
+  interests?: string[];
+}
+
+export class UpdateTutorDto extends UpdateUserDto {
+  @IsOptional()
+  @IsNumber()
+  rate?: number;
+
+  @IsOptional()
+  @IsNumber()
+  yearsOfExperience?: number;
+
+  @IsOptional()
+  @IsString()
+  qualification?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  subjects?: Types.ObjectId[];
+
+  @IsOptional()
+  @IsArray()
+  availability?: string[];
+
+  @IsOptional()
+  @IsArray()
+  reviews?: string[];
+}
+
+export class UpdateAdminDto extends UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  profileImageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
 }

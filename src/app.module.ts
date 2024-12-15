@@ -5,12 +5,24 @@ import { SeedersModule } from './modules/seeders/seeders.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { StudentsModule } from './modules/students/students.module';
-import { TwilioModule } from './modules/twilio/twilio.module';
-import { TutorsModule } from './modules/tutors/tutors.module';
 import { SubjectsModule } from './modules/subjects/subjects.module';
 
-import { User, UserSchema } from './modules/users/user.schema';
+import {
+  Admin,
+  AdminSchema,
+  Student,
+  StudentSchema,
+  Tutor,
+  TutorSchema,
+  User,
+  UserSchema,
+} from './modules/users/user.schema';
+import { TwilioModule } from './modules/twilio/twilio.module';
+import { EventsGateway } from './common/events/events.gateway';
+import {
+  AccountActivationRequest,
+  AccountActivationRequestSchema,
+} from './modules/admin/admin.schema';
 
 @Module({
   imports: [
@@ -31,7 +43,17 @@ import { User, UserSchema } from './modules/users/user.schema';
       {
         name: User.name,
         useFactory: () => {
-          return UserSchema;
+          const schema = UserSchema;
+          schema.discriminator(Student.name, StudentSchema);
+          schema.discriminator(Tutor.name, TutorSchema);
+          schema.discriminator(Admin.name, AdminSchema);
+          return schema;
+        },
+      },
+      {
+        name: AccountActivationRequest.name,
+        useFactory: () => {
+          return AccountActivationRequestSchema;
         },
       },
     ]),
@@ -39,11 +61,10 @@ import { User, UserSchema } from './modules/users/user.schema';
     AuthModule,
     UsersModule,
     AdminModule,
-    StudentsModule,
-    TwilioModule,
-    TutorsModule,
     SeedersModule,
     SubjectsModule,
+    TwilioModule,
   ],
+  providers: [EventsGateway],
 })
 export class AppModule {}

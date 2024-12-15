@@ -10,24 +10,25 @@ import {
 import { UsersService } from '../users/users.service';
 import { IResponse } from 'src/common/interfaces/response.interface';
 import { IUser } from '../users/interfaces/user.interface';
-import { Role } from 'src/common/enums/role.enum';
-import { Roles } from 'src/common/decorators/role.decorator';
+import { AccountActivationRequestDto, RequestDto } from './dtos/admin.dto';
+import { AdminService } from './admin.service';
 
 @Controller('admin')
-@Roles(Role.ADMIN)
 export class AdminController implements OnModuleInit {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly usersService: UsersService,
+  ) {}
 
   onModuleInit() {
     console.log('AdminController initialized');
   }
 
   @Get('users')
-  async findALlUsers(): Promise<Partial<IResponse<IUser[] | null>>> {
+  async findAllUsers(): Promise<Partial<IResponse<IUser[]>>> {
     try {
       return await this.usersService.findAllUsers();
-    } catch (error) {
-      console.error('Error in users:', error.message);
+    } catch {
       throw new HttpException(
         'Unable to retrieve users',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -35,11 +36,27 @@ export class AdminController implements OnModuleInit {
     }
   }
 
-  // @Post('accounts/verify')
-  // async verifyAccount(@Body() body: { Id: string; role: string }) {
-  //   console.log('Request received:', body);
-  //   const { Id, role } = body;
-  //   const result = await this.adminService.verifyAccount(Id, role);
-  //   return result;
-  // }
+  @Get('accounts/requests')
+  findAllAVerificationRequests() {
+    return this.adminService.findAllAVerificationRequests();
+  }
+
+  @Post('accounts/requests')
+  sendAccountActivationRequest(
+    @Body() accountActivationRequestDto: AccountActivationRequestDto,
+  ) {
+    return this.adminService.sendAccountActivationRequest(
+      accountActivationRequestDto,
+    );
+  }
+
+  @Post('accounts/requests/approve')
+  async approveAccountActivationRequest(@Body() requestDto: RequestDto) {
+    return await this.adminService.approveAccountActivationRequest(requestDto);
+  }
+
+  @Post('accounts/requests/reject')
+  async rejectAccountActivationRequest(@Body() requestDto: RequestDto) {
+    return await this.adminService.rejectAccountActivationRequest(requestDto);
+  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -7,15 +7,19 @@ import { User, UserDocument } from '../users/user.schema';
 import { Gender } from 'src/common/enums/gender.enum';
 
 @Injectable()
-export class AdminSeeder {
+export class AdminSeeder implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async onModuleInit() {
+    console.log('AdminSeeder initialized');
+  }
+
   async seed() {
     try {
       const adminExists = await this.userModel.findOne({
-        email: 'admin@example.com',
+        email: 'm.asadullah@efat.io',
       });
 
       if (!adminExists) {
@@ -31,7 +35,8 @@ export class AdminSeeder {
           role: Role.ADMIN,
           gender: Gender.MALE,
           isActive: true,
-          isVerified: true,
+          isPhoneNumberVerified: true,
+          isEmailVerified: true,
         });
 
         await admin.save();

@@ -1,6 +1,9 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,15 +15,30 @@ import { User, UserDocument } from '../users/user.schema';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as cryptojs from 'crypto-js';
+import { TwilioService } from '../twilio/twilio.service';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   constructor(
+    @Inject(forwardRef(() => TwilioService))
+    private readonly TwilioService: TwilioService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
 
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
+
+  async onModuleInit() {
+    console.log('AuthService initialized');
+  }
+
+  async generateVerificationCode(): Promise<string> {
+    return cryptojs.lib.WordArray.random(4)
+      .toString(cryptojs.enc.Hex)
+      .substring(0, 6)
+      .toLowerCase();
+  }
 
   private async generateAccessToken(user): Promise<string> {
     const payload = {
@@ -110,36 +128,19 @@ export class AuthService {
         `User already exists with this ${registerDto.email} or ${registerDto.username}.`,
       );
     }
-    //     const { role, ...userDetails } = registerDto;
-    //
-    //     if (role === Role.STUDENT) {
-    //       const student = new this.studentModel(userDetails);
-    //       await student.save();
-    //       return {
-    //         statusCode: 201,
-    //         message: 'Student registered successfully',
-    //         data: student,
-    //       };
-    //     } else if (role === Role.TUTOR) {
-    //       const tutor = new this.tutorModel(userDetails);
-    //       await tutor.save();
-    //       return {
-    //         statusCode: 201,
-    //         message: 'Tutor registered successfully',
-    //         data: tutor,
-    //       };
-    //     } else {
-    //       throw new BadRequestException('Invalid role provided');
-    //     }
+
+    const { role, ...userDetails } = registerDto;
+
     const registeringUser = new this.userModel({
-      ...registerDto,
+      role,
+      ...userDetails,
     });
+
     await registeringUser.save();
 
     return {
       statusCode: 200,
-      message:
-        'User registered successfully wait for the admin to approve your account',
+      message: `User registered successfully with the role:${role}.\nPlease wait for the admin to approve your account.`,
       data: null,
     };
   }

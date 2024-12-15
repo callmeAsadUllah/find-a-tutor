@@ -19,6 +19,7 @@ export class RegisterDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsPhoneNumber('PK')
   phoneNumber: string;
 
   @IsNotEmpty()
@@ -42,16 +43,26 @@ export class LoginDto {
 
 export class PhoneNumberDto {
   @IsNotEmpty()
-  @IsPhoneNumber()
+  @IsString()
+  @IsPhoneNumber('PK')
   phoneNumber: string;
+
+  @IsNotEmpty()
+  @IsEnum(Role)
+  role: Role;
 }
 
-export class VerifyCodeDto {
+export class VerifyPhoneNumberCodeDto {
   @IsNotEmpty()
-  @IsPhoneNumber()
+  @IsString()
+  @IsPhoneNumber('PK')
   phoneNumber: string;
 
   @IsNotEmpty()
   @IsNumberString()
   code: string;
+
+  @IsNotEmpty()
+  @IsEnum(Role)
+  role: Role;
 }
