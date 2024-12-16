@@ -12,8 +12,11 @@ import { IResponse } from 'src/common/interfaces/response.interface';
 import { IUser } from '../users/interfaces/user.interface';
 import { AccountActivationRequestDto, RequestDto } from './dtos/admin.dto';
 import { AdminService } from './admin.service';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { Role } from 'src/common/enums/role.enum';
 
 @Controller('admin')
+@Roles(Role.ADMIN)
 export class AdminController implements OnModuleInit {
   constructor(
     private readonly adminService: AdminService,

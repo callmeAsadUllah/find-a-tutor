@@ -11,7 +11,7 @@
 | `Post`          | `/auth/register`                   | `register()`                        |                 |
 | `Post`          | `/auth/login`                      | `login()`                           |                 |
 | `Post`          | `/auth/logout`                     | `logout()`                          |                 |
-| `Post`          | `/auth/refresh-tokens`             | `refreshTokens()`                   |                 |
+| `Post`          | `/auth/refresh-token`              | `refreshToken()`                    |                 |
 | `Get`           | `/admin`                           | `apiRoutes()`                       |                 |
 | `Post`          | `/admin/accounts`                  | `findAllUsers()`                    |                 |
 | `Post`          | `/admin/accounts/requests`         | `sendAccountActivationRequest()`    |                 |

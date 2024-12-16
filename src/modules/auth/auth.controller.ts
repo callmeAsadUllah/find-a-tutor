@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Post,
+  Req,
   Res,
   UsePipes,
 } from '@nestjs/common';
@@ -11,7 +13,8 @@ import { LoginDto, RegisterDto } from './dtos/auth.dto';
 import { AuthService } from './auth.service';
 import { IResponse } from 'src/common/interfaces/response.interface';
 import { IUser } from '../users/interfaces/user.interface';
-import { Response } from 'express';
+import { Response, Request } from 'express';
+import { RefreshTokenPipe } from 'src/common/pipes/refresh-token/refresh-token.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -19,19 +22,19 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(HashPasswordPipe)
-  async registerUser(
+  async register(
     @Body() registerDto: RegisterDto,
   ): Promise<Partial<IResponse<IUser>>> {
-    return await this.authService.registerUser(registerDto);
+    return await this.authService.register(registerDto);
   }
 
   @Post('login')
-  async loginUser(
+  async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<Partial<IResponse<IUser>>> {
     try {
-      const user = await this.authService.loginUser(loginDto);
+      const user = await this.authService.login(loginDto);
 
       const cookieOptions = {
         httpOnly: true,
@@ -51,6 +54,53 @@ export class AuthController {
       response.status(HttpStatus.UNAUTHORIZED).json({
         message: 'Invalid credentials or login error',
       });
+    }
+  }
+
+  @Get('refresh-token')
+  @UsePipes(RefreshTokenPipe)
+  public async refreshToken(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const refreshTokenFromCookie = request.cookies['refreshToken'];
+
+    const refreshedToken = await this.authService.refreshToken(
+      refreshTokenFromCookie,
+    );
+
+    const Options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    response.cookie('accessToken', refreshedToken.accessToken, Options);
+    response.cookie('refreshToken', refreshedToken.refreshToken, Options);
+
+    return {
+      accessToken: refreshedToken.accessToken,
+      refreshToken: refreshedToken.refreshToken,
+    };
+  }
+
+  @Post('logout')
+  async logout(
+    @Body() { userId }: { userId: string },
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ user: IUser }> {
+    const responseFromAuthService = await this.authService.logout(userId);
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    if (responseFromAuthService) {
+      {
+        response.clearCookie('accessToken', cookieOptions);
+        response.clearCookie('refreshToken', cookieOptions);
+      }
+      return responseFromAuthService;
     }
   }
 }

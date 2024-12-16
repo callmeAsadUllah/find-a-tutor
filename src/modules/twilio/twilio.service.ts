@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Twilio } from 'twilio';
@@ -16,7 +17,7 @@ import { IUser } from '../users/interfaces/user.interface';
 import { IResponse } from 'src/common/interfaces/response.interface';
 
 @Injectable()
-export class TwilioService {
+export class TwilioService implements OnModuleInit {
   private readonly verificationStore: Map<string, string>;
 
   constructor(
@@ -27,6 +28,10 @@ export class TwilioService {
     private readonly configService: ConfigService,
   ) {
     this.verificationStore = new Map<string, string>();
+  }
+
+  onModuleInit() {
+    console.log('TwilioService initialized');
   }
 
   private async getTwilioClient(): Promise<Twilio> {

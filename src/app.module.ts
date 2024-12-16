@@ -5,7 +5,6 @@ import { SeedersModule } from './modules/seeders/seeders.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { SubjectsModule } from './modules/subjects/subjects.module';
 
 import {
   Admin,
@@ -23,6 +22,7 @@ import {
   AccountActivationRequest,
   AccountActivationRequestSchema,
 } from './modules/admin/admin.schema';
+import { MailerModule } from './modules/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -57,13 +57,12 @@ import {
         },
       },
     ]),
-
     AuthModule,
     UsersModule,
     AdminModule,
     SeedersModule,
-    SubjectsModule,
     TwilioModule,
+    MailerModule,
   ],
   providers: [EventsGateway],
 })

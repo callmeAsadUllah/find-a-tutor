@@ -9,7 +9,6 @@ import {
   IsMongoId,
 } from 'class-validator';
 import { Gender } from 'src/common/enums/gender.enum';
-import { Role } from 'src/common/enums/role.enum';
 import { Types } from 'mongoose';
 
 export class UpdateUserDto {
@@ -32,10 +31,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;
-
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
 
   @IsOptional()
   @IsString()

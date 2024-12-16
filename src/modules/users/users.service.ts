@@ -5,11 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model, Types } from 'mongoose';
 import { UpdateUserDto } from './dtos/user.dto';
+import { ConnectDto } from './dtos/connect.dto';
+import { Role } from 'src/common/enums/role.enum';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly mailerService: MailerService,
   ) {}
 
   async onModuleInit() {
@@ -84,5 +88,23 @@ export class UsersService implements OnModuleInit {
       message: 'User updated successfully',
       data: updatedUser,
     };
+  }
+
+  async connectUser(connectDto: ConnectDto) {
+    try {
+      const { userId } = connectDto;
+
+      const user = await this.userModel.findById(userId);
+
+      const { role } = user;
+
+      if (role && role === Role.TUTOR) {
+        throw new Error('Only students can connect to tutor');
+      }
+
+      // const sendMail = await this.mailerService.sendMail();
+    } catch {
+      throw new Error();
+    }
   }
 }

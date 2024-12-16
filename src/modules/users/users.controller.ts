@@ -17,6 +17,9 @@ import {
   PhoneNumberDto,
   VerifyPhoneNumberCodeDto,
 } from '../auth/dtos/auth.dto';
+import { ConnectDto } from './dtos/connect.dto';
+import { Role } from 'src/common/enums/role.enum';
+import { Roles } from 'src/common/decorators/role.decorator';
 
 @Controller('users')
 export class UsersController implements OnModuleInit {
@@ -54,5 +57,11 @@ export class UsersController implements OnModuleInit {
     return await this.twilioService.verifyPhoneNumberCode(
       verifyPhoneNumberCodeDto,
     );
+  }
+
+  @Post('connect')
+  @Roles(Role.STUDENT)
+  connectUser(@Body() connectDto: ConnectDto) {
+    return this.usersService.connectUser(connectDto);
   }
 }

@@ -33,6 +33,7 @@ export class AdminSeeder implements OnModuleInit {
           phoneNumber: '+923390113141',
           password: hashedPassword,
           role: Role.ADMIN,
+          type: 'Admin',
           gender: Gender.MALE,
           isActive: true,
           isPhoneNumberVerified: true,

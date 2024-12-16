@@ -1,4 +1,11 @@
-import { forwardRef, Module, OnModuleInit } from '@nestjs/common';
+import {
+  forwardRef,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  OnModuleInit,
+  RequestMethod,
+} from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import {
@@ -13,9 +20,34 @@ import {
 } from './user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TwilioModule } from '../twilio/twilio.module';
+import { VerifyAccessTokenMiddleware } from 'src/common/middlewares/verify-access-token.middleware';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '../mailer/mailer.module';
 
 @Module({
   imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('ACCESS_TOKEN_EXPIRY'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('REFRESH_TOKEN_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('REFRESH_TOKEN_EXPIRY'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     MongooseModule.forFeatureAsync([
       {
         name: User.name,
@@ -29,13 +61,20 @@ import { TwilioModule } from '../twilio/twilio.module';
       },
     ]),
     forwardRef(() => TwilioModule),
+    MailerModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule implements OnModuleInit {
+export class UsersModule implements NestModule, OnModuleInit {
   onModuleInit() {
     console.log('UsersModule initialized');
+  }
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(VerifyAccessTokenMiddleware)
+      .forRoutes({ path: 'users/connect', method: RequestMethod.POST });
   }
 }

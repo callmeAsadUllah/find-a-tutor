@@ -89,7 +89,7 @@ export class AuthService implements OnModuleInit {
     return expiry;
   }
 
-  async logoutUser(userId: string): Promise<{ user: User }> {
+  async logout(userId: string): Promise<{ user: User }> {
     const user = await this.userModel.findOneAndUpdate(
       { _id: userId },
       { $unset: { refreshToken: 1 } },
@@ -115,9 +115,7 @@ export class AuthService implements OnModuleInit {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  async registerUser(
-    registerDto: RegisterDto,
-  ): Promise<Partial<IResponse<IUser>>> {
+  async register(registerDto: RegisterDto): Promise<Partial<IResponse<IUser>>> {
     const existingUser = await this.userModel.findOne({
       email: registerDto.email,
       username: registerDto.username,
@@ -145,7 +143,7 @@ export class AuthService implements OnModuleInit {
     };
   }
 
-  async loginUser(loginDto: LoginDto): Promise<Partial<IResponse<IUser>>> {
+  async login(loginDto: LoginDto): Promise<Partial<IResponse<IUser>>> {
     const user = await this.userModel.findOne({
       email: loginDto.email,
     });
@@ -180,7 +178,7 @@ export class AuthService implements OnModuleInit {
     };
   }
 
-  async refreshTokens(
+  async refreshToken(
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const secretKey = await this.getRefreshToken();

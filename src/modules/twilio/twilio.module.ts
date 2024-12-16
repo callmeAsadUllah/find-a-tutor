@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, Module, OnModuleInit } from '@nestjs/common';
 import { TwilioService } from './twilio.service';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
@@ -9,4 +9,10 @@ import { UsersModule } from '../users/users.module';
   providers: [TwilioService],
   exports: [TwilioService],
 })
-export class TwilioModule {}
+export class TwilioModule implements OnModuleInit {
+  constructor() {}
+
+  onModuleInit() {
+    console.log('TwilioModule initialized');
+  }
+}
