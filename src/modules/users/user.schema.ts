@@ -10,7 +10,7 @@ import { Availability } from 'src/common/enums/availability.enum';
 import { Role } from 'src/common/enums/role.enum';
 
 // Type for User Document
-export type UserDocument = User & Document;
+export type UserDocument = Tutor & Student & User & Document;
 
 //
 // ==============================
@@ -20,82 +20,82 @@ export type UserDocument = User & Document;
 @Schema({
   timestamps: true,
   discriminatorKey: 'type',
-  // toJSON: {
-  //   transform: (doc, ret) => {
-  //     if (!ret.gender) {
-  //       delete ret.gender;
-  //     }
-  //     if (!ret.city) {
-  //       delete ret.city;
-  //     }
-  //     if (!ret.rateType) {
-  //       delete ret.rateType;
-  //     }
-  //     if (!ret.rates) {
-  //       delete ret.rates;
-  //     }
-  //     if (!ret.experience) {
-  //       delete ret.experience;
-  //     }
-  //     if (!ret.qualification) {
-  //       delete ret.qualification;
-  //     }
-  //     if (!ret.availability) {
-  //       delete ret.availability;
-  //     }
-  //     if (!ret.grade) {
-  //       delete ret.grade;
-  //     }
-  //     if (!ret.interest) {
-  //       delete ret.interest;
-  //     }
-  //     if (!ret.tutors) {
-  //       delete ret.tutors;
-  //     }
-  //     if (!ret.students) {
-  //       delete ret.students;
-  //     }
-  //     return ret;
-  //   },
-  // },
-  // toObject: {
-  //   transform: (doc, ret) => {
-  //     if (!ret.gender) {
-  //       delete ret.gender;
-  //     }
-  //     if (!ret.city) {
-  //       delete ret.city;
-  //     }
-  //     if (!ret.rateType) {
-  //       delete ret.rateType;
-  //     }
-  //     if (!ret.rates) {
-  //       delete ret.rates;
-  //     }
-  //     if (!ret.experience) {
-  //       delete ret.experience;
-  //     }
-  //     if (!ret.qualification) {
-  //       delete ret.qualification;
-  //     }
-  //     if (!ret.availability) {
-  //       delete ret.availability;
-  //     }
-  //     if (!ret.grade) {
-  //       delete ret.grade;
-  //     }
-  //     if (!ret.interest) {
-  //       delete ret.interest;
-  //     }
-  //     if (!ret.tutors) {
-  //       delete ret.tutors;
-  //     }
-  //     if (!ret.students) {
-  //       delete ret.students;
-  //     }
-  //     return ret;
-  //   },
-  // },
+  toJSON: {
+    transform: (doc, ret) => {
+      if (!ret.gender) {
+        delete ret.gender;
+      }
+      if (!ret.city) {
+        delete ret.city;
+      }
+      if (!ret.rateType) {
+        delete ret.rateType;
+      }
+      if (!ret.rates) {
+        delete ret.rates;
+      }
+      if (!ret.experience) {
+        delete ret.experience;
+      }
+      if (!ret.qualification) {
+        delete ret.qualification;
+      }
+      if (!ret.availability) {
+        delete ret.availability;
+      }
+      if (!ret.grade) {
+        delete ret.grade;
+      }
+      if (!ret.interest) {
+        delete ret.interest;
+      }
+      if (!ret.tutors) {
+        delete ret.tutors;
+      }
+      if (!ret.students) {
+        delete ret.students;
+      }
+      return ret;
+    },
+  },
+  toObject: {
+    transform: (doc, ret) => {
+      if (!ret.gender) {
+        delete ret.gender;
+      }
+      if (!ret.city) {
+        delete ret.city;
+      }
+      if (!ret.rateType) {
+        delete ret.rateType;
+      }
+      if (!ret.rates) {
+        delete ret.rates;
+      }
+      if (!ret.experience) {
+        delete ret.experience;
+      }
+      if (!ret.qualification) {
+        delete ret.qualification;
+      }
+      if (!ret.availability) {
+        delete ret.availability;
+      }
+      if (!ret.grade) {
+        delete ret.grade;
+      }
+      if (!ret.interest) {
+        delete ret.interest;
+      }
+      if (!ret.tutors) {
+        delete ret.tutors;
+      }
+      if (!ret.students) {
+        delete ret.students;
+      }
+      return ret;
+    },
+  },
 })
 export class User {
   /**

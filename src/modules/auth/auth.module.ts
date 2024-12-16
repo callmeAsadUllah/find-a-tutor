@@ -43,6 +43,6 @@ import { TwilioModule } from '../twilio/twilio.module';
   ],
   controllers: [AuthController],
   providers: [AuthService],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService],
 })
 export class AuthModule {}

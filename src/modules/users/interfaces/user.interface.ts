@@ -18,12 +18,6 @@ export interface IUser {
   password: string;
   gender?: Gender;
   role: Role;
-  // age?: number;
-  // dateOfBirth?: Date;
-  // subjects?: Types.ObjectId[];
-  // contact information
-  // profileImageUrl?: string;
-  // address?: string;
   city?: City;
   // Tutor-specific fields
   rateType?: RateType;

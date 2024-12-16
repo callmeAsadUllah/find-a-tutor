@@ -7,6 +7,7 @@ import {
   OnModuleInit,
   Param,
   Post,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { IResponse } from 'src/common/interfaces/response.interface';
@@ -20,6 +21,7 @@ import {
 import { ConnectDto } from './dtos/connect.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { Roles } from 'src/common/decorators/role.decorator';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController implements OnModuleInit {
@@ -61,7 +63,17 @@ export class UsersController implements OnModuleInit {
 
   @Post('connect')
   @Roles(Role.STUDENT)
-  connectUser(@Body() connectDto: ConnectDto) {
-    return this.usersService.connectUser(connectDto);
+  connectUser(@Body() connectDto: ConnectDto, @Req() request: Request) {
+    const { firstName, lastName, gender, city, interests, grade } =
+      request.user;
+    return this.usersService.connectUser(
+      connectDto,
+      firstName,
+      lastName,
+      gender,
+      city,
+      interests,
+      grade,
+    );
   }
 }

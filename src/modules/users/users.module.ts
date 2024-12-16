@@ -24,6 +24,7 @@ import { VerifyAccessTokenMiddleware } from 'src/common/middlewares/verify-acces
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '../mailer/mailer.module';
+import { AuthService } from '../auth/auth.service';
 
 @Module({
   imports: [
@@ -64,7 +65,7 @@ import { MailerModule } from '../mailer/mailer.module';
     MailerModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, AuthService],
   exports: [UsersService],
 })
 export class UsersModule implements NestModule, OnModuleInit {

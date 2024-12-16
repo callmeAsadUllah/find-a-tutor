@@ -48,6 +48,11 @@ export class AuthService implements OnModuleInit {
       lastName: user?.lastName,
       email: user.email,
       role: user.role,
+      phoneNumber: user.phoneNumber,
+      city: user?.city,
+      gender: user?.gender,
+      grade: user?.grade,
+      interests: user?.interests,
     };
     const secretKey = await this.getAccessToken();
     const expiresIn = await this.getAccessTokenExpiry();

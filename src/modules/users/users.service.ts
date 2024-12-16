@@ -8,6 +8,11 @@ import { UpdateUserDto } from './dtos/user.dto';
 import { ConnectDto } from './dtos/connect.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { MailerService } from '../mailer/mailer.service';
+import { MailDto } from '../mailer/dtos/mail.dto';
+import { Gender } from 'src/common/enums/gender.enum';
+import { Interest } from 'src/common/enums/interest.enum';
+import { City } from 'src/common/enums/city.enum';
+import { Grade } from 'src/common/enums/grade.enum';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -90,7 +95,15 @@ export class UsersService implements OnModuleInit {
     };
   }
 
-  async connectUser(connectDto: ConnectDto) {
+  async connectUser(
+    connectDto: ConnectDto,
+    firstName: string,
+    lastName: string,
+    gender: Gender,
+    city: City,
+    interests: Interest[],
+    grade: Grade,
+  ) {
     try {
       const { userId } = connectDto;
 
@@ -98,13 +111,34 @@ export class UsersService implements OnModuleInit {
 
       const { role } = user;
 
-      if (role && role === Role.TUTOR) {
-        throw new Error('Only students can connect to tutor');
+      if (role && role === Role.STUDENT) {
+        throw new Error(
+          'Only students can connect to tutor not other students',
+        );
       }
 
-      // const sendMail = await this.mailerService.sendMail();
-    } catch {
-      throw new Error();
+      const { email } = user;
+
+      const mailDto: MailDto = {
+        to: email,
+        firstName: firstName,
+        lastName: lastName,
+        city: city,
+        grade: grade,
+        gender: gender,
+        interests: interests,
+      };
+
+      const sendMail = this.mailerService.sendMail(mailDto);
+
+      return {
+        statusCode: 200,
+        message: 'connection email has been sent to the tutor',
+        data: sendMail,
+      };
+    } catch (error) {
+      console.error(`${error.message}`);
+      throw new Error(`${error.message}`);
     }
   }
 }

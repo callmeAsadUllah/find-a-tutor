@@ -12,9 +12,7 @@ export class VerifyAccessTokenMiddleware implements NestMiddleware {
 
   async use(request: Request, response: Response, next: NextFunction) {
     try {
-      const token = request.cookies?.accessToken;
-      // optional
-      console.log(token, 'Token from cookies');
+      const token = request.cookies['accessToken'];
 
       if (!token) {
         throw new Error('Access Token not found in request');
@@ -22,14 +20,11 @@ export class VerifyAccessTokenMiddleware implements NestMiddleware {
 
       const accessTokenSecret = await this.authService.getAccessToken();
 
-      const payload = (await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync(token, {
         secret: accessTokenSecret,
-      })) as { userId: number };
+      });
 
-      console.log(payload, 'Token');
-
-      request['userId'] = payload.userId;
-
+      request.user = payload;
       next();
     } catch (error) {
       throw new Error(error?.message || 'Invalid access token');
