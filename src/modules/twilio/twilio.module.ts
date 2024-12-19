@@ -5,10 +5,10 @@ import { UsersModule } from '../users/users.module';
 import { TwilioController } from './twilio.controller';
 
 @Module({
-  imports: [forwardRef(() => AuthModule), UsersModule],
+  imports: [AuthModule, forwardRef(() => UsersModule)],
+  controllers: [TwilioController],
   providers: [TwilioService],
   exports: [TwilioService],
-  controllers: [TwilioController],
 })
 export class TwilioModule implements OnModuleInit {
   onModuleInit() {

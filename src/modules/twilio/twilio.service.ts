@@ -20,10 +20,9 @@ export class TwilioService implements OnModuleInit {
   private readonly verificationStore: Map<string, string>;
 
   constructor(
-    @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     @Inject(forwardRef(() => UsersService))
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {
     this.verificationStore = new Map<string, string>();
@@ -76,7 +75,7 @@ export class TwilioService implements OnModuleInit {
     console.log('Sending verification code to:', phoneNumberDto);
     const { phoneNumber } = phoneNumberDto;
 
-    const user = await this.userService.findUserByPhoneNumber(phoneNumber);
+    const user = await this.usersService.findUserByPhoneNumber(phoneNumber);
 
     console.log('User phoneNumber:', phoneNumber);
 
@@ -103,7 +102,7 @@ export class TwilioService implements OnModuleInit {
 
   async verifyPhoneNumberCode(
     verifyPhoneNumberCodeDto: VerifyPhoneNumberCodeDto,
-  ): Promise<boolean> {
+  ) {
     const { phoneNumber, code } = verifyPhoneNumberCodeDto;
 
     const storedCode = this.verificationStore.get(phoneNumber);
@@ -118,7 +117,14 @@ export class TwilioService implements OnModuleInit {
 
     this.verificationStore.delete(phoneNumber);
 
-    return true;
+    console.info(`Phone Number verification successful for: ${phoneNumber}`);
+
+    const user = await this.usersService.findUserByPhoneNumber(phoneNumber);
+
+    user.isPhoneNumberVerified = true;
+    await user.save();
+
+    return user;
   }
 
   async createRoom() {

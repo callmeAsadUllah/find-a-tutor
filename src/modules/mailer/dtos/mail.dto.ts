@@ -6,13 +6,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { IMail } from '../interfaces/mail.interface';
 import { Grade } from 'src/common/enums/grade.enum';
 import { Interest } from 'src/common/enums/interest.enum';
 import { City } from 'src/common/enums/city.enum';
 import { Gender } from 'src/common/enums/gender.enum';
 
-export class MailDto implements IMail {
+export class MailDto {
   @IsNotEmpty()
   @IsEmail()
   to: string;

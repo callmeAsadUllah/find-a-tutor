@@ -9,16 +9,6 @@ export class TwilioController implements OnModuleInit {
     console.log('TwilioController initialized');
   }
 
-  //   @Get('create')
-  //   createRoom() {
-  //     return this.twilioService.createRoom();
-  //   }
-  //
-  //   @Get()
-  //   fetchRoom() {
-  //     return this.twilioService.fetchRoom();
-  //   }
-
   @Post('access-token')
   async generateTwilioAccessToken(
     @Body() identity: string,

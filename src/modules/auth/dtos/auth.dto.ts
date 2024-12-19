@@ -2,7 +2,6 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumberString,
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
@@ -14,6 +13,7 @@ export class RegisterDto {
   username: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsEmail()
   email: string;
 
@@ -27,12 +27,14 @@ export class RegisterDto {
   password: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsEnum(Role)
   role: Role;
 }
 
 export class LoginDto {
   @IsNotEmpty()
+  @IsString()
   @IsEmail()
   email: string;
 
@@ -48,6 +50,7 @@ export class PhoneNumberDto {
   phoneNumber: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsEnum(Role)
   role: Role;
 }
@@ -59,10 +62,39 @@ export class VerifyPhoneNumberCodeDto {
   phoneNumber: string;
 
   @IsNotEmpty()
-  @IsNumberString()
+  @IsString()
   code: string;
 
   @IsNotEmpty()
+  @IsString()
+  @IsEnum(Role)
+  role: Role;
+}
+
+export class EmailDto {
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum(Role)
+  role: Role;
+}
+
+export class VerifyEmailCodeDto {
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  code: string;
+
+  @IsNotEmpty()
+  @IsString()
   @IsEnum(Role)
   role: Role;
 }

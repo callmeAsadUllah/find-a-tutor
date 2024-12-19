@@ -9,28 +9,65 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageDto } from './dtos/message.dto';
+import { OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../auth/auth.service';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class MessagesGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+  implements
+    OnModuleInit,
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect
 {
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
+  ) {}
+
+  async onModuleInit() {
+    console.log('MessagesGateway initialized');
+  }
+
+  async afterInit(server: Server) {
     console.log('WebSocket server initialized', server);
   }
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
+
+    try {
+      const token = client.handshake.auth.token;
+
+      if (!token) {
+        throw new UnauthorizedException('No token provided');
+      }
+
+      const accessToken = await this.authService.getAccessToken();
+
+      const user = await this.jwtService.verifyAsync(token, {
+        secret: accessToken,
+      });
+
+      client.data.user = user;
+
+      console.log('user', user);
+    } catch (error) {
+      client.disconnect();
+      console.error('Connection refused: Invalid token', error.message);
+    }
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() messageDto: MessageDto) {
+  async handleMessage(@MessageBody() messageDto: MessageDto) {
     this.server.emit('message', messageDto);
   }
 }

@@ -19,12 +19,12 @@ import {
   UserSchema,
 } from './user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TwilioModule } from '../twilio/twilio.module';
 import { VerifyAccessTokenMiddleware } from 'src/common/middlewares/verify-access-token.middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '../mailer/mailer.module';
 import { AuthService } from '../auth/auth.service';
+import { TwilioModule } from '../twilio/twilio.module';
 
 @Module({
   imports: [
@@ -38,7 +38,6 @@ import { AuthService } from '../auth/auth.service';
       }),
       inject: [ConfigService],
     }),
-
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -61,8 +60,8 @@ import { AuthService } from '../auth/auth.service';
         },
       },
     ]),
+    forwardRef(() => MailerModule),
     forwardRef(() => TwilioModule),
-    MailerModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, AuthService],

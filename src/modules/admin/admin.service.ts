@@ -58,8 +58,6 @@ export class AdminService implements OnModuleInit {
 
     await this.requestModel.findByIdAndDelete(requestDto.requestId);
 
-    await request.save();
-
     return {
       message: 'Account activation request approved successfully',
     };

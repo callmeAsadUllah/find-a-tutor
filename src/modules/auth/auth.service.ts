@@ -1,7 +1,5 @@
 import {
   ForbiddenException,
-  forwardRef,
-  Inject,
   Injectable,
   OnModuleInit,
   UnauthorizedException,
@@ -14,16 +12,13 @@ import { IUser } from '../users/interfaces/user.interface';
 import { User, UserDocument } from '../users/user.schema';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as cryptojs from 'crypto-js';
-import { TwilioService } from '../twilio/twilio.service';
 import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
   constructor(
-    @Inject(forwardRef(() => TwilioService))
-    private readonly TwilioService: TwilioService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
 

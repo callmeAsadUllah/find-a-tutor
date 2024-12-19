@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { IResponse } from 'src/common/interfaces/response.interface';
 import { IUser } from './interfaces/user.interface';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,6 +18,7 @@ import { Grade } from 'src/common/enums/grade.enum';
 export class UsersService implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @Inject(forwardRef(() => MailerService))
     private readonly mailerService: MailerService,
   ) {}
 
@@ -55,9 +56,7 @@ export class UsersService implements OnModuleInit {
     };
   }
 
-  async findUserByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Partial<IResponse<IUser | null>>> {
+  async findUserByPhoneNumber(phoneNumber: string) {
     const user = await this.userModel.findOne({
       phoneNumber: phoneNumber,
     });
@@ -66,11 +65,19 @@ export class UsersService implements OnModuleInit {
       throw new Error('User not found');
     }
 
-    return {
-      statusCode: 200,
-      message: 'User retrieved successfully',
-      data: user,
-    };
+    return user;
+  }
+
+  async findUserByEmail(email: string) {
+    const user = await this.userModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user;
   }
 
   async getUserByIdAndUpdate(

@@ -1,14 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Transporter, createTransport } from 'nodemailer';
+import { EmailDto, VerifyEmailCodeDto } from '../auth/dtos/auth.dto';
 import { MailDto } from './dtos/mail.dto';
+import { AuthService } from '../auth/auth.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class MailerService {
-  private transporter: Transporter;
-  private readonly verificationStore: Map<string, string>;
+  private readonly transporter: Transporter;
+  private readonly verificationStore: Map<
+    string,
+    { code: string; expiry: number }
+  >;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+  ) {
     this.transporter = createTransport({
       service: this.getSMTPService(),
       host: this.getSMTPHost(),
@@ -19,7 +35,10 @@ export class MailerService {
         pass: this.getSMTPAuthPass(),
       },
     });
-    this.verificationStore = new Map<string, string>();
+    this.verificationStore = new Map<
+      string,
+      { code: string; expiry: number }
+    >();
   }
 
   getSMTPService() {
@@ -44,6 +63,81 @@ export class MailerService {
 
   getSMTPAuthPass() {
     return this.configService.get<string>('SMTP_PASS');
+  }
+
+  async sendEmailVerificationCode(emailDto: EmailDto) {
+    const { email } = emailDto;
+
+    const user = await this.usersService.findUserByEmail(email);
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const verificationCode = await this.authService.generateVerificationCode();
+
+    const expiry = Date.now() + 3 * 60 * 1000;
+
+    this.verificationStore.set(email, {
+      code: verificationCode,
+      expiry: expiry,
+    });
+
+    const mailOptions = {
+      from: 'Find A Tutor <admin@fat.io>',
+      to: email,
+      subject: 'Email Verification Code',
+      text: `Your email verification code is: ${verificationCode}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
+          <h2>Email Verification</h2>
+          <p>Your email verification code is:</p>
+          <p style="font-size: 24px; font-weight: bold; color: #4CAF50;">${verificationCode}</p>
+          <p>This code will expire in 10 minutes.</p>
+        </div>
+      `,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.info(`Verification code sent to ${email}`);
+    } catch (error) {
+      console.error('Error sending verification email:', error.message);
+      throw new Error(
+        'Failed to send verification email. Please try again later.',
+      );
+    }
+  }
+
+  async verifyEmailCode(verifyEmailCodeDto: VerifyEmailCodeDto) {
+    const { email, code } = verifyEmailCodeDto;
+
+    const record = this.verificationStore.get(email);
+
+    if (!record) {
+      console.warn(`No verification record found for email: ${email}`);
+      return false;
+    }
+
+    const { code: storedCode, expiry } = record;
+
+    if (storedCode === code && Date.now() < expiry) {
+      this.verificationStore.delete(email);
+
+      console.info(`Email verification successful for: ${email}`);
+      const user = await this.usersService.findUserByEmail(email);
+      user.isEmailVerified = true;
+      await user.save();
+      return user;
+    }
+
+    if (Date.now() >= expiry) {
+      this.verificationStore.delete(email);
+      console.warn(`Verification code expired for email: ${email}`);
+    }
+
+    console.warn(`Verification failed for email: ${email}`);
+    return false;
   }
 
   async sendMail(mailDto: MailDto) {
@@ -136,7 +230,7 @@ export class MailerService {
 
             <p>The student is interested in connecting with you and potentially becoming one of your students. To accept or reject the request, please click the button below.</p>
 
-            <a href="/" class="button">View Request</a>
+            <a href="http://localhost:3000/auth/email/verify" class="button">View Request</a>
           </div>
           
           <div class="footer">
@@ -157,9 +251,3 @@ export class MailerService {
     }
   }
 }
-
-// <!-- <a href="${mailDto.connectionRequestLink}" class="button">View Request</a>-->
-// <div class="student-info">
-//               <p><strong>Student Name:</strong> ${mailDto.firstMame} ${mailDto.lastName}</p>
-//               <p><strong>Email:</strong> ${mailDto.email}</p>
-//             </div>

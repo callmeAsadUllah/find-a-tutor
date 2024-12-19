@@ -15,19 +15,24 @@ import { IUser } from './interfaces/user.interface';
 import { TwilioService } from '../twilio/twilio.service';
 import { Types } from 'mongoose';
 import {
+  EmailDto,
   PhoneNumberDto,
+  VerifyEmailCodeDto,
   VerifyPhoneNumberCodeDto,
 } from '../auth/dtos/auth.dto';
 import { ConnectDto } from './dtos/connect.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Request } from 'express';
+import { MailerService } from '../mailer/mailer.service';
 
 @Controller('users')
 export class UsersController implements OnModuleInit {
   constructor(
     @Inject(forwardRef(() => TwilioService))
     private readonly twilioService: TwilioService,
+    @Inject(forwardRef(() => MailerService))
+    private readonly mailerService: MailerService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -42,20 +47,29 @@ export class UsersController implements OnModuleInit {
     return await this.usersService.getUserById(userId);
   }
 
-  @Post('send-code')
+  @Post('phone-number/send-code')
   async sendPhoneNumberVerificationCode(
     @Body() phoneNumberDto: PhoneNumberDto,
-  ): Promise<Partial<IResponse<IUser>>> {
-    console.log(phoneNumberDto);
+  ) {
     return await this.twilioService.sendPhoneNumberVerificationCode(
       phoneNumberDto,
     );
   }
 
-  @Post('verify-code')
+  @Post('email/send-code')
+  async sendEmailVerificationCode(@Body() emailDto: EmailDto) {
+    return await this.mailerService.sendEmailVerificationCode(emailDto);
+  }
+
+  @Post('email/verify-code')
+  async verifyEmailCode(@Body() verifyEmailCodeDto: VerifyEmailCodeDto) {
+    return await this.mailerService.verifyEmailCode(verifyEmailCodeDto);
+  }
+
+  @Post('phone-number/verify-code')
   async verifyPhoneNumberCode(
     @Body() verifyPhoneNumberCodeDto: VerifyPhoneNumberCodeDto,
-  ): Promise<boolean> {
+  ) {
     return await this.twilioService.verifyPhoneNumberCode(
       verifyPhoneNumberCodeDto,
     );
