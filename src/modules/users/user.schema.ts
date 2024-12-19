@@ -20,82 +20,82 @@ export type UserDocument = Tutor & Student & User & Document;
 @Schema({
   timestamps: true,
   discriminatorKey: 'type',
-  toJSON: {
-    transform: (doc, ret) => {
-      if (!ret.gender) {
-        delete ret.gender;
-      }
-      if (!ret.city) {
-        delete ret.city;
-      }
-      if (!ret.rateType) {
-        delete ret.rateType;
-      }
-      if (!ret.rates) {
-        delete ret.rates;
-      }
-      if (!ret.experience) {
-        delete ret.experience;
-      }
-      if (!ret.qualification) {
-        delete ret.qualification;
-      }
-      if (!ret.availability) {
-        delete ret.availability;
-      }
-      if (!ret.grade) {
-        delete ret.grade;
-      }
-      if (!ret.interest) {
-        delete ret.interest;
-      }
-      if (!ret.tutors) {
-        delete ret.tutors;
-      }
-      if (!ret.students) {
-        delete ret.students;
-      }
-      return ret;
-    },
-  },
-  toObject: {
-    transform: (doc, ret) => {
-      if (!ret.gender) {
-        delete ret.gender;
-      }
-      if (!ret.city) {
-        delete ret.city;
-      }
-      if (!ret.rateType) {
-        delete ret.rateType;
-      }
-      if (!ret.rates) {
-        delete ret.rates;
-      }
-      if (!ret.experience) {
-        delete ret.experience;
-      }
-      if (!ret.qualification) {
-        delete ret.qualification;
-      }
-      if (!ret.availability) {
-        delete ret.availability;
-      }
-      if (!ret.grade) {
-        delete ret.grade;
-      }
-      if (!ret.interest) {
-        delete ret.interest;
-      }
-      if (!ret.tutors) {
-        delete ret.tutors;
-      }
-      if (!ret.students) {
-        delete ret.students;
-      }
-      return ret;
-    },
-  },
+  // toJSON: {
+  //   transform: (doc, ret) => {
+  //     if (!ret.gender) {
+  //       delete ret.gender;
+  //     }
+  //     if (!ret.city) {
+  //       delete ret.city;
+  //     }
+  //     // if (!ret.rateType) {
+  //     //   delete ret.rateType;
+  //     // }
+  //     // if (!ret.rates) {
+  //     //   delete ret.rates;
+  //     // }
+  //     // if (!ret.experience) {
+  //     //   delete ret.experience;
+  //     // }
+  //     // if (!ret.qualification) {
+  //     //   delete ret.qualification;
+  //     // }
+  //     // if (!ret.availability) {
+  //     //   delete ret.availability;
+  //     // }
+  //     if (!ret.grade) {
+  //       delete ret.grade;
+  //     }
+  //     if (!ret.interest) {
+  //       delete ret.interest;
+  //     }
+  //     if (!ret.tutors) {
+  //       delete ret.tutors;
+  //     }
+  //     if (!ret.students) {
+  //       delete ret.students;
+  //     }
+  //     return ret;
+  //   },
+  // },
+  // toObject: {
+  //   transform: (doc, ret) => {
+  //     if (!ret.gender) {
+  //       delete ret.gender;
+  //     }
+  //     if (!ret.city) {
+  //       delete ret.city;
+  //     }
+  //     // if (!ret.rateType) {
+  //     //   delete ret.rateType;
+  //     // }
+  //     // if (!ret.rates) {
+  //     //   delete ret.rates;
+  //     // }
+  //     // if (!ret.experience) {
+  //     //   delete ret.experience;
+  //     // }
+  //     // if (!ret.qualification) {
+  //     //   delete ret.qualification;
+  //     // }
+  //     // if (!ret.availability) {
+  //     //   delete ret.availability;
+  //     // }
+  //     if (!ret.grade) {
+  //       delete ret.grade;
+  //     }
+  //     if (!ret.interest) {
+  //       delete ret.interest;
+  //     }
+  //     if (!ret.tutors) {
+  //       delete ret.tutors;
+  //     }
+  //     if (!ret.students) {
+  //       delete ret.students;
+  //     }
+  //     return ret;
+  //   },
+  // },
 })
 export class User {
   /**
@@ -190,14 +190,14 @@ export class Student extends User {
   /**
    * Grade of the student (e.g., Grade 10, O-Level)
    */
-  @Prop({ type: String, enum: Grade })
-  grade?: Grade;
+  @Prop({ type: String, enum: Grade, required: true })
+  grade: Grade;
 
   /**
    * List of student interests (e.g., Mathematics, Sports)
    */
-  @Prop({ type: [String], enum: Interest })
-  interests?: Interest[];
+  @Prop({ type: [String], enum: Interest, required: true })
+  interests: Interest[];
 
   /**
    * Array of ObjectIds referencing the tutors associated with the student
@@ -219,27 +219,30 @@ export class Tutor extends User {
   /**
    * Rates charged by the tutor (e.g., 1000 PKR per hour)
    */
-  @Prop({ type: Number })
-  rates?: number;
+  @Prop({ type: Number, required: true })
+  rates: number;
 
   /**
    * Number of years of teaching experience
    */
-  @Prop({ type: Number })
-  experience?: number;
+  @Prop({ type: Number, required: true })
+  experience: number;
 
   /**
    * Qualification of the tutor (e.g., MSc in Mathematics)
    */
-  @Prop({ type: String, enum: Qualification })
-  qualification?: Qualification;
+  @Prop({ type: String, enum: Qualification, required: true })
+  qualification: Qualification;
+
+  @Prop({ type: [String], enum: Interest })
+  subjects?: Interest[];
 
   /**
    * Rate type (Hourly, Monthly, etc.)
    * Refers to the RateType enum
    */
   @Prop({ type: String, enum: RateType, default: RateType.MONTHLY })
-  rateType?: RateType;
+  rateType: RateType;
 
   /**
    * Array of ObjectIds referencing the students taught by the tutor
@@ -250,8 +253,8 @@ export class Tutor extends User {
   /**
    * Array of availability slots (e.g., 'Monday 2-4 PM')
    */
-  @Prop({ type: [String], enum: Availability })
-  availability?: Availability[];
+  @Prop({ type: [String], enum: Availability, required: true })
+  availability: Availability[];
 }
 
 // Create schema for the Tutor class

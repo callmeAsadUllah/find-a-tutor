@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as cryptojs from 'crypto-js';
 import { TwilioService } from '../twilio/twilio.service';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -134,7 +135,20 @@ export class AuthService implements OnModuleInit {
 
     const { role, ...userDetails } = registerDto;
 
+    let type: string;
+    switch (role) {
+      case Role.TUTOR:
+        type = 'Tutor';
+        break;
+      case Role.STUDENT:
+        type = 'Student';
+        break;
+      default:
+        throw new Error('Invalid role provided.');
+    }
+
     const registeringUser = new this.userModel({
+      type,
       role,
       ...userDetails,
     });
@@ -156,6 +170,12 @@ export class AuthService implements OnModuleInit {
     if (!user) {
       console.log('Invalid credentials');
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException(
+        'Your account is not active\n Please wait for your account activation',
+      );
     }
 
     const isPasswordValid = await this.validatePassword(

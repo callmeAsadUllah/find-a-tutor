@@ -56,8 +56,13 @@ export class AdminService implements OnModuleInit {
       isActive: true,
     });
 
-    request.isActive = true;
-    return request.save();
+    await this.requestModel.findByIdAndDelete(requestDto.requestId);
+
+    await request.save();
+
+    return {
+      message: 'Account activation request approved successfully',
+    };
   }
 
   async rejectAccountActivationRequest(requestDto: RequestDto) {

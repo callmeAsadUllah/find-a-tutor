@@ -17,12 +17,12 @@ import {
   UserSchema,
 } from './modules/users/user.schema';
 import { TwilioModule } from './modules/twilio/twilio.module';
-import { EventsGateway } from './common/events/events.gateway';
 import {
   AccountActivationRequest,
   AccountActivationRequestSchema,
 } from './modules/admin/admin.schema';
 import { MailerModule } from './modules/mailer/mailer.module';
+import { MessagesModule } from './modules/messages/messages.module';
 
 @Module({
   imports: [
@@ -63,7 +63,7 @@ import { MailerModule } from './modules/mailer/mailer.module';
     SeedersModule,
     TwilioModule,
     MailerModule,
+    MessagesModule,
   ],
-  providers: [EventsGateway],
 })
 export class AppModule {}

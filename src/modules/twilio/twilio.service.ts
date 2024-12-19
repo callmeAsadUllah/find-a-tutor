@@ -6,15 +6,14 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Twilio } from 'twilio';
+import * as Twilio from 'twilio';
+
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
 import {
   PhoneNumberDto,
   VerifyPhoneNumberCodeDto,
 } from '../auth/dtos/auth.dto';
-import { IUser } from '../users/interfaces/user.interface';
-import { IResponse } from 'src/common/interfaces/response.interface';
 
 @Injectable()
 export class TwilioService implements OnModuleInit {
@@ -34,12 +33,6 @@ export class TwilioService implements OnModuleInit {
     console.log('TwilioService initialized');
   }
 
-  private async getTwilioClient(): Promise<Twilio> {
-    const accountSid = await this.getAccountSid();
-    const authToken = await this.getAuthToken();
-    return new Twilio(accountSid, authToken);
-  }
-
   private async getAccountSid(): Promise<string> {
     const accountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
     return accountSid;
@@ -50,6 +43,15 @@ export class TwilioService implements OnModuleInit {
     return authToken;
   }
 
+  private async getTwilioApiKey() {
+    const apiKey = this.configService.get<string>('TWILIO_API_KEY');
+    return apiKey;
+  }
+  private async getTwilioApiSecret() {
+    const apiSecret = this.configService.get<string>('TWILIO_API_SECRET');
+    return apiSecret;
+  }
+
   private async getTwilioPhoneNumber(): Promise<string> {
     const twilioPhoneNumber = this.configService.get<string>(
       'TWILIO_PHONE_NUMBER',
@@ -58,13 +60,19 @@ export class TwilioService implements OnModuleInit {
   }
 
   private async getMyPhoneNumber(): Promise<string> {
-    const myPhoneNumber = this.configService.get<string>('TWILIO_USER_NUMBER');
+    const myPhoneNumber = this.configService.get<string>(
+      'TWILIO_USER_PHONE_NUMBER',
+    );
     return myPhoneNumber;
   }
 
-  async sendPhoneNumberVerificationCode(
-    phoneNumberDto: PhoneNumberDto,
-  ): Promise<Partial<IResponse<IUser>>> {
+  private async getTwilioClient(): Promise<Twilio.Twilio> {
+    const accountSid = await this.getAccountSid();
+    const authToken = await this.getAuthToken();
+    return new Twilio.Twilio(accountSid, authToken);
+  }
+
+  async sendPhoneNumberVerificationCode(phoneNumberDto: PhoneNumberDto) {
     console.log('Sending verification code to:', phoneNumberDto);
     const { phoneNumber } = phoneNumberDto;
 
@@ -111,5 +119,57 @@ export class TwilioService implements OnModuleInit {
     this.verificationStore.delete(phoneNumber);
 
     return true;
+  }
+
+  async createRoom() {
+    const client = await this.getTwilioClient();
+    const room = await client.video.v1.rooms.create({
+      type: 'go',
+      uniqueName: 'My First Video Room',
+    });
+
+    console.log(room.sid);
+  }
+
+  async fetchRoom() {
+    const client = await this.getTwilioClient();
+
+    const room = await client.video.v1.rooms('DailyStandup').fetch();
+
+    console.log(room.sid);
+
+    return {
+      message: room.sid,
+    };
+  }
+
+  async generateTwilioAccessToken(identity: string, roomName: string) {
+    const accountSid = await this.getAccountSid();
+    const apiKey = await this.getTwilioApiKey();
+    const apiSecret = await this.getTwilioApiSecret();
+
+    if (!accountSid || !apiKey || !apiSecret) {
+      throw new Error(
+        'Twilio credentials are not properly configured in environment variables',
+      );
+    }
+
+    const AccessToken = Twilio.jwt.AccessToken;
+
+    const VideoGrant = AccessToken.VideoGrant;
+
+    const videoGrant = new VideoGrant({
+      room: roomName,
+    });
+
+    const token = new AccessToken(accountSid, apiKey, apiSecret, { identity });
+
+    token.addGrant(videoGrant);
+    console.log(token.toJwt());
+    token.toJwt();
+
+    return {
+      token: token.toJwt(),
+    };
   }
 }

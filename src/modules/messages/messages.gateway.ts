@@ -5,27 +5,32 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketServer,
+  OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { MessageDto } from './dtos/message.dto';
 
 @WebSocketGateway({ cors: { origin: '*' } })
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class MessagesGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
-  async handleConnection(client: Socket) {
+  afterInit(server: Server) {
+    console.log('WebSocket server initialized', server);
+  }
+
+  handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
   }
 
-  async handleDisconnect(client: Socket) {
+  handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('message')
-  async handleMessage(
-    @MessageBody() data: { sender: string; message: string },
-  ): Promise<void> {
-    console.log('Message received:', data);
-    this.server.emit('message', data);
+  handleMessage(@MessageBody() messageDto: MessageDto) {
+    this.server.emit('message', messageDto);
   }
 }

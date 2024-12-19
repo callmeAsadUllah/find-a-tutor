@@ -27,7 +27,7 @@ export class AdminController implements OnModuleInit {
     console.log('AdminController initialized');
   }
 
-  @Get('users')
+  @Get('accounts/users')
   async findAllUsers(): Promise<Partial<IResponse<IUser[]>>> {
     try {
       return await this.usersService.findAllUsers();

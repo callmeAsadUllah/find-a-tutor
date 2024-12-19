@@ -9,6 +9,7 @@ import { Availability } from 'src/common/enums/availability.enum';
 import { Qualification } from 'src/common/enums/qualification.enum';
 import { RateType } from 'src/common/enums/rate-type.enum';
 import { City } from 'src/common/enums/city.enum';
+import { Interest } from 'src/common/enums/interest.enum';
 
 @Injectable()
 export class TutorSeeder implements OnModuleInit {
@@ -35,6 +36,7 @@ export class TutorSeeder implements OnModuleInit {
           rates: 200,
           experience: 4,
           qualification: Qualification.PHD,
+          subjects: [Interest.SOCIOLOGY, Interest.ART],
           availability: [Availability.MON_1PM_4PM],
         },
         {
@@ -50,6 +52,7 @@ export class TutorSeeder implements OnModuleInit {
           rates: 15000,
           experience: 4,
           qualification: Qualification.DIPLOMA,
+          subjects: [Interest.SOCIOLOGY, Interest.ART],
           availability: [Availability.TUE_9AM_12PM, Availability.TUE_1PM_4PM],
         },
         {
@@ -65,6 +68,7 @@ export class TutorSeeder implements OnModuleInit {
           rates: 150,
           experience: 2,
           qualification: Qualification.PHD,
+          subjects: [Interest.SOCIOLOGY, Interest.ART],
           availability: [Availability.MON_9AM_12PM, Availability.FRI_1PM_4PM],
         },
         {
@@ -80,6 +84,7 @@ export class TutorSeeder implements OnModuleInit {
           rates: 17000,
           experience: 5,
           qualification: Qualification.MASTERS,
+          subjects: [Interest.SOCIOLOGY, Interest.ART],
           availability: [Availability.MON_9AM_12PM, Availability.SUN_9AM_12PM],
         },
       ];
@@ -107,6 +112,7 @@ export class TutorSeeder implements OnModuleInit {
             rates: tutorData.rates,
             experience: tutorData.experience,
             qualification: tutorData.qualification,
+            subjects: tutorData.subjects,
             availability: tutorData.availability,
             isActive: true,
             isPhoneNumberVerified: true,

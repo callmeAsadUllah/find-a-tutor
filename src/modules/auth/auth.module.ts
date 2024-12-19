@@ -2,7 +2,16 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../users/user.schema';
+import {
+  Admin,
+  AdminSchema,
+  Student,
+  StudentSchema,
+  Tutor,
+  TutorSchema,
+  User,
+  UserSchema,
+} from '../users/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TwilioModule } from '../twilio/twilio.module';
@@ -35,7 +44,11 @@ import { TwilioModule } from '../twilio/twilio.module';
       {
         name: User.name,
         useFactory: () => {
-          return UserSchema;
+          const schema = UserSchema;
+          schema.discriminator(Student.name, StudentSchema);
+          schema.discriminator(Tutor.name, TutorSchema);
+          schema.discriminator(Admin.name, AdminSchema);
+          return schema;
         },
       },
     ]),
