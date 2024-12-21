@@ -11,7 +11,6 @@ import {
 import { HashPasswordPipe } from 'src/common/pipes/hash-password/hash-password.pipe';
 import { LoginDto, RegisterDto } from './dtos/auth.dto';
 import { AuthService } from './auth.service';
-import { IResponse } from 'src/common/interfaces/response.interface';
 import { IUser } from '../users/interfaces/user.interface';
 import { Response, Request } from 'express';
 import { RefreshTokenPipe } from 'src/common/pipes/refresh-token/refresh-token.pipe';
@@ -22,9 +21,7 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(HashPasswordPipe)
-  async register(
-    @Body() registerDto: RegisterDto,
-  ): Promise<Partial<IResponse<IUser>>> {
+  async register(@Body() registerDto: RegisterDto) {
     return await this.authService.register(registerDto);
   }
 
@@ -32,7 +29,7 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<Partial<IResponse<IUser>>> {
+  ) {
     try {
       const user = await this.authService.login(loginDto);
 

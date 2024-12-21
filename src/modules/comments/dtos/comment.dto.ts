@@ -16,7 +16,7 @@ export class CreateCommentDto {
   @IsString()
   content: string;
 
-  @IsArray()
   @IsOptional()
+  @IsArray()
   comments?: Types.ObjectId[];
 }

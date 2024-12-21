@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twilio Token</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sdk.twilio.com/js/video/releases/2.25.0/twilio-video.min.js"></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto px-4 py-10">
+      <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">
+        Generate Twilio Token
+      </h1>
+      <form
+        id="twilio-form"
+        class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg"
+      >
+        <div class="mb-4">
+          <label for="identity" class="block text-sm font-medium text-gray-700"
+            >Identity</label
+          >
+          <input
+            type="text"
+            id="identity"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            placeholder="Enter identity"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label for="roomName" class="block text-sm font-medium text-gray-700"
+            >Room Name</label
+          >
+          <input
+            type="text"
+            id="roomName"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            placeholder="Enter room name"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Generate Token
+        </button>
+      </form>
+      <div id="token-output" class="mt-6 text-center text-gray-700"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-10">
+      <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">
+        Join a Video Room
+      </h1>
+      <form
+        id="twilio-form"
+        class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg"
+      >
+        <div class="mb-4">
+          <label for="identity" class="block text-sm font-medium text-gray-700"
+            >Identity</label
+          >
+          <input
+            type="text"
+            id="identity"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            placeholder="Enter identity"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label for="roomName" class="block text-sm font-medium text-gray-700"
+            >Room Name</label
+          >
+          <input
+            type="text"
+            id="roomName"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            placeholder="Enter room name"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Join Room
+        </button>
+      </form>
+      <div id="video-room" class="mt-6 hidden">
+        <div id="local-video" class="border p-4 rounded-md shadow-md"></div>
+        <div id="remote-videos" class="grid grid-cols-2 gap-4 mt-4"></div>
+      </div>
+    </div>
+  </body>
+</html>

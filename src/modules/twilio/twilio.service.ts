@@ -160,18 +160,18 @@ export class TwilioService implements OnModuleInit {
       );
     }
 
-    const AccessToken = Twilio.jwt.AccessToken;
+    const accessToken = Twilio.jwt.AccessToken;
 
-    const VideoGrant = AccessToken.VideoGrant;
-
-    const videoGrant = new VideoGrant({
+    const videoGrant = new accessToken.VideoGrant({
       room: roomName,
     });
 
-    const token = new AccessToken(accountSid, apiKey, apiSecret, { identity });
+    const token = new accessToken(accountSid, apiKey, apiSecret, { identity });
 
     token.addGrant(videoGrant);
+
     console.log(token.toJwt());
+
     token.toJwt();
 
     return {

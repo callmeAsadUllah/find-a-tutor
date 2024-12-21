@@ -23,6 +23,7 @@ import {
 } from './modules/admin/admin.schema';
 import { MailerModule } from './modules/mailer/mailer.module';
 import { MessagesModule } from './modules/messages/messages.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { MessagesModule } from './modules/messages/messages.module';
     TwilioModule,
     MailerModule,
     MessagesModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}

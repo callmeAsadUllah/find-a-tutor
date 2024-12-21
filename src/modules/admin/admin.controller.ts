@@ -6,17 +6,18 @@ import {
   HttpStatus,
   OnModuleInit,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { IResponse } from 'src/common/interfaces/response.interface';
-import { IUser } from '../users/interfaces/user.interface';
 import { AccountActivationRequestDto, RequestDto } from './dtos/admin.dto';
 import { AdminService } from './admin.service';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enums/role.enum';
+import { City } from 'src/common/enums/city.enum';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @Controller('admin')
-@Roles(Role.ADMIN)
+@ApiTags('admin')
 export class AdminController implements OnModuleInit {
   constructor(
     private readonly adminService: AdminService,
@@ -28,9 +29,16 @@ export class AdminController implements OnModuleInit {
   }
 
   @Get('accounts/users')
-  async findAllUsers(): Promise<Partial<IResponse<IUser[]>>> {
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Get all users' })
+  async findAllUsers(
+    @Query('city') city?: City,
+    @Query('role') role?: Role,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
     try {
-      return await this.usersService.findAllUsers();
+      return await this.usersService.findAllUsers(city, role, page, limit);
     } catch {
       throw new HttpException(
         'Unable to retrieve users',

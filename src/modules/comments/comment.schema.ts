@@ -1,9 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { IComment } from './interfaces/comment.interface';
+
+export type CommentDocument = IComment & Comment & Document;
 
 @Schema({ timestamps: true })
 export class Comment {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   userId: Types.ObjectId;
 
   @Prop({
@@ -20,6 +23,7 @@ export class Comment {
 
   /**
    * comment in comment
+   * will be implemented. it requires time.
    */
   @Prop({ type: [Types.ObjectId], ref: 'Comment' })
   comments?: Types.ObjectId[];

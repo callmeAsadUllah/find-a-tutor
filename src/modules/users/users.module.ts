@@ -23,8 +23,8 @@ import { VerifyAccessTokenMiddleware } from 'src/common/middlewares/verify-acces
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '../mailer/mailer.module';
-import { AuthService } from '../auth/auth.service';
 import { TwilioModule } from '../twilio/twilio.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -62,9 +62,10 @@ import { TwilioModule } from '../twilio/twilio.module';
     ]),
     forwardRef(() => MailerModule),
     forwardRef(() => TwilioModule),
+    AuthModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, AuthService],
+  providers: [UsersService],
   exports: [UsersService],
 })
 export class UsersModule implements NestModule, OnModuleInit {

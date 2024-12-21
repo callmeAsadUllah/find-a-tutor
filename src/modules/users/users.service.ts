@@ -26,12 +26,38 @@ export class UsersService implements OnModuleInit {
     console.log('UsersService initialized');
   }
 
-  async findAllUsers(): Promise<Partial<IResponse<IUser[]>>> {
+  async findAllUsers(city: City, role: Role, page: number, limit: number) {
     try {
-      const users = await this.userModel.find().exec();
+      page = page > 0 ? page : 1;
+      limit = limit > 0 ? limit : 10;
+
+      const skip = (page - 1) * limit;
+
+      // const count = await this.userModel.countDocuments();
+
+      const users = await this.userModel.aggregate([
+        {
+          $match: {},
+        },
+        {
+          $project: {
+            _id: 0,
+            password: 0,
+            refreshToken: 0,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit,
+        },
+      ]);
+
       if (!users) {
         throw new Error('No users found');
       }
+
       return {
         statusCode: 200,
         message: 'Users retrieved successfully',
