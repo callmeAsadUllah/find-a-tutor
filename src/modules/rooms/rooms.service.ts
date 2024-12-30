@@ -1,11 +1,16 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateRoomDto } from './dtos/room.dto';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { TwilioService } from '../twilio/twilio.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Room, RoomDocument } from './room.schema';
 
 @Injectable()
 export class RoomsService implements OnModuleInit {
-  constructor(private readonly twilioService: TwilioService) {}
+  constructor(
+    @InjectModel(Room.name) private readonly roomModel: Model<RoomDocument>,
+    private readonly twilioService: TwilioService,
+  ) {}
 
   async onModuleInit() {
     console.log('RoomsService initialized');
@@ -23,18 +28,57 @@ export class RoomsService implements OnModuleInit {
 
       console.log(room);
 
-      return room;
+      return { data: room };
     } catch (error) {
-      console.log(error.message);
-      throw new Error('Failed to create room');
+      console.error(error.message);
+      throw new Error(error.message);
     }
   }
 
   async findAllRooms() {
-    return `This action returns all rooms`;
+    try {
+      const rooms = await this.roomModel.find().exec();
+
+      console.log(`${rooms}`);
+
+      return {
+        data: rooms,
+      };
+    } catch (error) {
+      console.error(error.message);
+      throw new Error(error.message);
+    }
+  }
+
+  async findOneRoomByName(name?: string) {
+    try {
+      const room = await this.roomModel.findOne({ name: name }).exec();
+
+      console.log(`${room}`);
+
+      return {
+        roomName: room.name,
+        data: room,
+      };
+    } catch (error) {
+      console.error(error.message);
+      throw new Error(error.message);
+    }
   }
 
   async getOneRoomById(roomId: Types.ObjectId) {
-    return `This action returns a #${roomId} room`;
+    try {
+      const room = await this.roomModel.findById(roomId).exec();
+
+      console.log(`${room}`);
+
+      return {
+        roomId: room.id,
+        data: room,
+      };
+    } catch (error) {
+      console.log(error.message);
+      throw new Error(error.message);
+    }
   }
 }

@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model, Types } from 'mongoose';
@@ -10,7 +16,7 @@ import { MailDto } from '../mailer/dtos/mail.dto';
 import { City } from 'src/common/enums/city.enum';
 
 @Injectable()
-export class UsersService implements OnModuleInit {
+export class UsersService implements OnModuleInit, OnModuleDestroy {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @Inject(forwardRef(() => MailerService))
@@ -19,6 +25,10 @@ export class UsersService implements OnModuleInit {
 
   async onModuleInit() {
     console.log('UsersService initialized');
+  }
+
+  async onModuleDestroy() {
+    console.log('UsersService destroyed');
   }
 
   async findAllUsers(city: City, role: Role, page: number, limit: number) {

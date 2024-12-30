@@ -14,11 +14,14 @@ import { AuthService } from './auth.service';
 import { IUser } from '../users/interfaces/user.interface';
 import { Response, Request } from 'express';
 import { RefreshTokenPipe } from 'src/common/pipes/refresh-token/refresh-token.pipe';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: 'register user' })
   @Post('register')
   @UsePipes(HashPasswordPipe)
   async register(@Body() registerDto: RegisterDto) {

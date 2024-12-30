@@ -127,16 +127,6 @@ export class TwilioService implements OnModuleInit {
     return user;
   }
 
-  async getRoom() {
-    const client = await this.getTwilioClient();
-
-    const room = await client.video.v1.rooms('DailyStandup').fetch();
-
-    console.log(room.sid);
-
-    return room.sid;
-  }
-
   async generateTwilioAccessToken(identity: string) {
     try {
       const accountSid = await this.getAccountSid();

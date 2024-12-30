@@ -29,7 +29,7 @@ export class TwilioController implements OnModuleInit {
       const token =
         await this.twilioService.generateTwilioAccessToken(identity);
 
-      return token;
+      return { accessToken: token };
     } catch (error) {
       console.error(error.message);
       throw new Error(error.message);

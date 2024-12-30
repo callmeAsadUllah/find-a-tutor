@@ -180,11 +180,6 @@ export class AuthService implements OnModuleInit {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    //   const roomName = `room-${user._id}-${Date.now()}`;
-    //   const room = await this.twilioService.createRoom(roomName);
-    //   const token = await this.twilioService.generateTwilioAccessToken(user.email, roomName);
-    //   await this.roomService.createRoom(user._id, roomName);
-
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user);
 

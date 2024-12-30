@@ -28,8 +28,10 @@ import { Request } from 'express';
 import { CreatePriceDto } from '../prices/dtos/price.dto';
 import { CreateCustomerDto } from '../customers/dtos/customer.dto';
 import { CreateSubscriptionDto } from '../subscriptions/dtos/subscription.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('users')
 export class UsersController implements OnModuleInit {
   constructor(
     @Inject(forwardRef(() => TwilioService))

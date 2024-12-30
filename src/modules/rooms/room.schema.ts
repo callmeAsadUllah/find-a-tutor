@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IRoom } from './interfaces/room.interface';
+import { Document } from 'mongoose';
+
+export type RoomDocument = IRoom & Room & Document;
 
 @Schema({ timestamps: true })
 export class Room implements IRoom {
