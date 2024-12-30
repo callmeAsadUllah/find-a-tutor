@@ -23,7 +23,7 @@ export class AdminSeeder implements OnModuleInit {
       });
 
       if (!adminExists) {
-        const hashedPassword = await bcrypt.hash('adminPassword123', 10);
+        const hashedPassword = await bcrypt.hash('root113141', 10);
 
         const admin = new this.userModel({
           username: 'asadullah',

@@ -6,7 +6,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as Twilio from 'twilio';
+import * as twilio from 'twilio';
 
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
@@ -20,15 +20,15 @@ export class TwilioService implements OnModuleInit {
   private readonly verificationStore: Map<string, string>;
 
   constructor(
-    private readonly authService: AuthService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {
     this.verificationStore = new Map<string, string>();
   }
 
-  onModuleInit() {
+  async onModuleInit() {
     console.log('TwilioService initialized');
   }
 
@@ -65,10 +65,10 @@ export class TwilioService implements OnModuleInit {
     return myPhoneNumber;
   }
 
-  private async getTwilioClient(): Promise<Twilio.Twilio> {
+  async getTwilioClient(): Promise<twilio.Twilio> {
     const accountSid = await this.getAccountSid();
     const authToken = await this.getAuthToken();
-    return new Twilio.Twilio(accountSid, authToken);
+    return new twilio.Twilio(accountSid, authToken);
   }
 
   async sendPhoneNumberVerificationCode(phoneNumberDto: PhoneNumberDto) {
@@ -127,55 +127,45 @@ export class TwilioService implements OnModuleInit {
     return user;
   }
 
-  async createRoom() {
-    const client = await this.getTwilioClient();
-    const room = await client.video.v1.rooms.create({
-      type: 'go',
-      uniqueName: 'My First Video Room',
-    });
-
-    console.log(room.sid);
-  }
-
-  async fetchRoom() {
+  async getRoom() {
     const client = await this.getTwilioClient();
 
     const room = await client.video.v1.rooms('DailyStandup').fetch();
 
     console.log(room.sid);
 
-    return {
-      message: room.sid,
-    };
+    return room.sid;
   }
 
-  async generateTwilioAccessToken(identity: string, roomName: string) {
-    const accountSid = await this.getAccountSid();
-    const apiKey = await this.getTwilioApiKey();
-    const apiSecret = await this.getTwilioApiSecret();
+  async generateTwilioAccessToken(identity: string) {
+    try {
+      const accountSid = await this.getAccountSid();
+      const apiKey = await this.getTwilioApiKey();
+      const apiSecret = await this.getTwilioApiSecret();
 
-    if (!accountSid || !apiKey || !apiSecret) {
-      throw new Error(
-        'Twilio credentials are not properly configured in environment variables',
-      );
+      if (!accountSid || !apiKey || !apiSecret) {
+        throw new Error(
+          'Twilio credentials are not properly configured in environment variables',
+        );
+      }
+
+      const accessToken = twilio.jwt.AccessToken;
+
+      const videoGrant = new accessToken.VideoGrant();
+
+      const token = new accessToken(accountSid, apiKey, apiSecret, {
+        identity,
+        ttl: 3600,
+      });
+
+      token.addGrant(videoGrant);
+
+      console.log(token.toJwt());
+
+      return token.toJwt();
+    } catch (error) {
+      console.error(error.message);
+      throw new Error(error.message);
     }
-
-    const accessToken = Twilio.jwt.AccessToken;
-
-    const videoGrant = new accessToken.VideoGrant({
-      room: roomName,
-    });
-
-    const token = new accessToken(accountSid, apiKey, apiSecret, { identity });
-
-    token.addGrant(videoGrant);
-
-    console.log(token.toJwt());
-
-    token.toJwt();
-
-    return {
-      token: token.toJwt(),
-    };
   }
 }

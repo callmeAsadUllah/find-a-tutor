@@ -7,6 +7,7 @@ import {
   OnModuleInit,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AccountActivationRequestDto, RequestDto } from './dtos/admin.dto';
@@ -15,8 +16,10 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { City } from 'src/common/enums/city.enum';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { VerifyAdminGuard } from 'src/common/guards/verify-admin.guard';
 
 @Controller('admin')
+@UseGuards(VerifyAdminGuard)
 @ApiTags('admin')
 export class AdminController implements OnModuleInit {
   constructor(
@@ -48,11 +51,13 @@ export class AdminController implements OnModuleInit {
   }
 
   @Get('accounts/requests')
+  @Roles(Role.ADMIN)
   findAllAVerificationRequests() {
     return this.adminService.findAllAVerificationRequests();
   }
 
   @Post('accounts/requests')
+  @Roles(Role.ADMIN)
   sendAccountActivationRequest(
     @Body() accountActivationRequestDto: AccountActivationRequestDto,
   ) {
@@ -62,11 +67,13 @@ export class AdminController implements OnModuleInit {
   }
 
   @Post('accounts/requests/approve')
+  @Roles(Role.ADMIN)
   async approveAccountActivationRequest(@Body() requestDto: RequestDto) {
     return await this.adminService.approveAccountActivationRequest(requestDto);
   }
 
   @Post('accounts/requests/reject')
+  @Roles(Role.ADMIN)
   async rejectAccountActivationRequest(@Body() requestDto: RequestDto) {
     return await this.adminService.rejectAccountActivationRequest(requestDto);
   }

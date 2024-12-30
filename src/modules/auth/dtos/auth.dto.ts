@@ -18,7 +18,6 @@ export class RegisterDto {
   email: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsPhoneNumber('PK')
   phoneNumber: string;
 
@@ -27,14 +26,12 @@ export class RegisterDto {
   password: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(Role)
   role: Role;
 }
 
 export class LoginDto {
   @IsNotEmpty()
-  @IsString()
   @IsEmail()
   email: string;
 
@@ -45,19 +42,16 @@ export class LoginDto {
 
 export class PhoneNumberDto {
   @IsNotEmpty()
-  @IsString()
   @IsPhoneNumber('PK')
   phoneNumber: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(Role)
   role: Role;
 }
 
 export class VerifyPhoneNumberCodeDto {
   @IsNotEmpty()
-  @IsString()
   @IsPhoneNumber('PK')
   phoneNumber: string;
 
@@ -66,26 +60,22 @@ export class VerifyPhoneNumberCodeDto {
   code: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(Role)
   role: Role;
 }
 
 export class EmailDto {
   @IsNotEmpty()
-  @IsString()
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(Role)
   role: Role;
 }
 
 export class VerifyEmailCodeDto {
   @IsNotEmpty()
-  @IsString()
   @IsEmail()
   email: string;
 
@@ -94,7 +84,6 @@ export class VerifyEmailCodeDto {
   code: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(Role)
   role: Role;
 }

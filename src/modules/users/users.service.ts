@@ -1,6 +1,4 @@
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { IResponse } from 'src/common/interfaces/response.interface';
-import { IUser } from './interfaces/user.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model, Types } from 'mongoose';
@@ -9,10 +7,7 @@ import { ConnectDto } from './dtos/connect.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { MailerService } from '../mailer/mailer.service';
 import { MailDto } from '../mailer/dtos/mail.dto';
-import { Gender } from 'src/common/enums/gender.enum';
-import { Interest } from 'src/common/enums/interest.enum';
 import { City } from 'src/common/enums/city.enum';
-import { Grade } from 'src/common/enums/grade.enum';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -33,11 +28,22 @@ export class UsersService implements OnModuleInit {
 
       const skip = (page - 1) * limit;
 
-      // const count = await this.userModel.countDocuments();
+      const filter: Record<string, any> = {};
+
+      if (city)
+        filter.city = {
+          $regex: new RegExp(city, 'i'),
+        };
+      if (role)
+        filter.role = {
+          $regex: new RegExp(role, 'i'),
+        };
+
+      const count = await this.userModel.countDocuments(filter);
 
       const users = await this.userModel.aggregate([
         {
-          $match: {},
+          $match: filter,
         },
         {
           $project: {
@@ -62,15 +68,18 @@ export class UsersService implements OnModuleInit {
         statusCode: 200,
         message: 'Users retrieved successfully',
         data: users,
+        meta: {
+          total: count,
+          page,
+          limit,
+        },
       };
     } catch {
       throw new Error('Failed to retrieve users');
     }
   }
 
-  async getUserById(
-    userId: Types.ObjectId,
-  ): Promise<Partial<IResponse<IUser | null>>> {
+  async getUserById(userId: Types.ObjectId) {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new Error('User not found');
@@ -109,7 +118,7 @@ export class UsersService implements OnModuleInit {
   async getUserByIdAndUpdate(
     userId: Types.ObjectId,
     updateUserDto: UpdateUserDto,
-  ): Promise<Partial<IResponse<IUser | null>>> {
+  ) {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       userId,
       { ...updateUserDto },
@@ -128,15 +137,7 @@ export class UsersService implements OnModuleInit {
     };
   }
 
-  async connectUser(
-    connectDto: ConnectDto,
-    firstName: string,
-    lastName: string,
-    gender: Gender,
-    city: City,
-    interests: Interest[],
-    grade: Grade,
-  ) {
+  async connectUser(connectDto: ConnectDto) {
     try {
       const { userId } = connectDto;
 
@@ -154,12 +155,6 @@ export class UsersService implements OnModuleInit {
 
       const mailDto: MailDto = {
         to: email,
-        firstName: firstName,
-        lastName: lastName,
-        city: city,
-        grade: grade,
-        gender: gender,
-        interests: interests,
       };
 
       const sendMail = this.mailerService.sendMail(mailDto);

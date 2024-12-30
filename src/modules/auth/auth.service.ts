@@ -7,8 +7,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LoginDto, RegisterDto } from './dtos/auth.dto';
-import { IResponse } from '../../common/interfaces/response.interface';
-import { IUser } from '../users/interfaces/user.interface';
 import { User, UserDocument } from '../users/user.schema';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -19,10 +17,9 @@ import { Role } from 'src/common/enums/role.enum';
 @Injectable()
 export class AuthService implements OnModuleInit {
   constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
   async onModuleInit() {
@@ -116,7 +113,7 @@ export class AuthService implements OnModuleInit {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  async register(registerDto: RegisterDto): Promise<Partial<IResponse<IUser>>> {
+  async register(registerDto: RegisterDto) {
     const existingUser = await this.userModel.findOne({
       email: registerDto.email,
       username: registerDto.username,
@@ -134,6 +131,7 @@ export class AuthService implements OnModuleInit {
     switch (role) {
       case Role.TUTOR:
         type = 'Tutor';
+
         break;
       case Role.STUDENT:
         type = 'Student';
@@ -153,7 +151,7 @@ export class AuthService implements OnModuleInit {
     return {
       statusCode: 200,
       message: `User registered successfully with the role:${role}.\nPlease wait for the admin to approve your account.`,
-      data: null,
+      data: registeringUser,
     };
   }
 

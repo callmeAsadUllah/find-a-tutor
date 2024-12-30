@@ -217,16 +217,9 @@ export class MailerService {
           </div>
           <div class="email-body">
             <p>Dear Tutor,</p>
-            <p>You have received a connection request from a student! Please find their details below:</p>
+            <p>You have received a connection request from a student! </p>
             
-            <div class="student-info">
-              <p><strong>Student Name:</strong> ${mailDto?.firstName} ${mailDto?.lastName} </p>
-              <p><strong>Grade:</strong> ${mailDto?.grade}</p>
-              <p><strong>Interests:</strong> ${mailDto?.interests}</p>
-              <p><strong>City:</strong> ${mailDto?.city}</p>
-              <p><strong>Gender:</strong> ${mailDto?.gender}</p>
-              
-            </div>
+            
 
             <p>The student is interested in connecting with you and potentially becoming one of your students. To accept or reject the request, please click the button below.</p>
 

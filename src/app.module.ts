@@ -24,6 +24,9 @@ import {
 import { MailerModule } from './modules/mailer/mailer.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { MeModule } from './modules/me/me.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
 
 @Module({
   imports: [
@@ -66,6 +69,9 @@ import { CommentsModule } from './modules/comments/comments.module';
     MailerModule,
     MessagesModule,
     CommentsModule,
+    PaymentsModule,
+    MeModule,
+    RoomsModule,
   ],
 })
 export class AppModule {}

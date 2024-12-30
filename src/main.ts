@@ -2,11 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { AdminSeeder } from './modules/seeders/admin.seeder';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
-import { TutorSeeder } from './modules/seeders/tutor.seeder';
-import { StudentSeeder } from './modules/seeders/student.seeder';
+// import { AdminSeeder } from './modules/seeders/admin.seeder';
+// import { TutorSeeder } from './modules/seeders/tutor.seeder';
+// import { StudentSeeder } from './modules/seeders/student.seeder';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,16 +15,16 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  const adminSeeder = app.get(AdminSeeder);
-  const tutorSeeder = app.get(TutorSeeder);
-  const studentSeeder = app.get(StudentSeeder);
+  // const adminSeeder = app.get(AdminSeeder);
+  // const tutorSeeder = app.get(TutorSeeder);
+  // const studentSeeder = app.get(StudentSeeder);
 
   const port = configService.get<number>('PORT');
 
   try {
-    await adminSeeder.seed();
-    await tutorSeeder.seed();
-    await studentSeeder.seed();
+    // await adminSeeder.seed();
+    // await tutorSeeder.seed();
+    // await studentSeeder.seed();
 
     console.log('Seeding completed');
   } catch (error) {

@@ -25,6 +25,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '../mailer/mailer.module';
 import { TwilioModule } from '../twilio/twilio.module';
 import { AuthModule } from '../auth/auth.module';
+import { Request, RequestSchema } from '../requests/request.schema';
+import { PaymentsModule } from '../payments/payments.module';
+import { Product, ProductSchema } from '../products/product.schema';
+import { Price, PriceSchema } from '../prices/price.schema';
 
 @Module({
   imports: [
@@ -60,22 +64,52 @@ import { AuthModule } from '../auth/auth.module';
         },
       },
     ]),
+    MongooseModule.forFeatureAsync([
+      {
+        name: Request.name,
+        useFactory: () => {
+          return RequestSchema;
+        },
+      },
+    ]),
+    MongooseModule.forFeatureAsync([
+      {
+        name: Product.name,
+        useFactory: () => {
+          return ProductSchema;
+        },
+      },
+    ]),
+    MongooseModule.forFeatureAsync([
+      {
+        name: Price.name,
+        useFactory: () => {
+          return PriceSchema;
+        },
+      },
+    ]),
     forwardRef(() => MailerModule),
     forwardRef(() => TwilioModule),
     AuthModule,
+    PaymentsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule implements NestModule, OnModuleInit {
-  onModuleInit() {
+export class UsersModule implements OnModuleInit, NestModule {
+  async onModuleInit() {
     console.log('UsersModule initialized');
   }
 
-  configure(consumer: MiddlewareConsumer) {
+  async configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(VerifyAccessTokenMiddleware)
-      .forRoutes({ path: 'users/connect', method: RequestMethod.POST });
+      .forRoutes(
+        { path: 'users/connect', method: RequestMethod.POST },
+        { path: 'users/tutors', method: RequestMethod.GET },
+        { path: 'users/plans', method: RequestMethod.POST },
+        { path: 'users/prices', method: RequestMethod.POST },
+      );
   }
 }

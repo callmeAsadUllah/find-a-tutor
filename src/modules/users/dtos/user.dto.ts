@@ -10,6 +10,8 @@ import {
 } from 'class-validator';
 import { Gender } from 'src/common/enums/gender.enum';
 import { Types } from 'mongoose';
+import { Grade } from 'src/common/enums/grade.enum';
+import { Interest } from 'src/common/enums/interest.enum';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -52,11 +54,12 @@ export class UpdateUserDto {
 export class UpdateStudentDto extends UpdateUserDto {
   @IsOptional()
   @IsString()
-  grade?: string;
+  grade?: Grade;
 
   @IsOptional()
   @IsArray()
-  interests?: string[];
+  @IsString()
+  interests?: Interest[];
 }
 
 export class UpdateTutorDto extends UpdateUserDto {
@@ -84,18 +87,4 @@ export class UpdateTutorDto extends UpdateUserDto {
   @IsOptional()
   @IsArray()
   reviews?: string[];
-}
-
-export class UpdateAdminDto extends UpdateUserDto {
-  @IsOptional()
-  @IsString()
-  profileImageUrl?: string;
-
-  @IsOptional()
-  @IsString()
-  address?: string;
-
-  @IsOptional()
-  @IsString()
-  city?: string;
 }

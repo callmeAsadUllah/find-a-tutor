@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://sdk.twilio.com/js/video/releases/2.22.1/twilio-video.min.js"></script>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Main Container -->
+    <header class="bg-blue-600 text-white py-4">
+      <div class="container mx-auto text-center">
+        <h1 class="text-3xl font-bold">find A Tutor</h1>
+      </div>
+    </header>
+    <!-- Hero Section -->
+    <div
+      class="flex flex-col items-center justify-center min-h-screen py-12 px-4"
+    >
+      <!-- Room Input -->
+      <div class="w-full max-w-md space-y-4">
+        <h1 class="text-3xl font-bold text-center text-gray-800">
+          Join Video Room
+        </h1>
+        <input
+          type="text"
+          id="identity"
+          placeholder="Enter your name (e.g., Teacher or Student)"
+          class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <input
+          type="text"
+          id="roomName"
+          placeholder="Room Name (e.g., Classroom)"
+          class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+
+        <!-- Join Button -->
+        <button
+          id="joinRoomBtn"
+          class="w-full p-3 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-700 focus:outline-none"
+        >
+          Join Room
+        </button>
+      </div>
+
+      <!-- Video Container -->
+      <div id="videoContainer" class="hidden mt-6 w-full max-w-3xl">
+        <div id="local-video" class="mb-4">
+          <video
+            id="localVideo"
+            class="border rounded-md w-full"
+            autoplay
+            muted
+          ></video>
+        </div>
+        <div id="remote-video" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Remote videos will be added dynamically here -->
+        </div>
+      </div>
+      <!-- Footer Section -->
+    </div>
+    <footer class="bg-gray-800 text-white py-4 mt-12">
+      <div class="container mx-auto text-center">
+        <p>
+          <span class="font-mono">&lt;/&gt;</span> with
+          <span class="text-red-500">❤️</span> by Muhammad Asad Ullah.
+        </p>
+      </div>
+    </footer>
+    <!-- scripting -->
+    <script>
+      const Video = Twilio.Video;
+
+      const isSupported = Twilio.Video.isSupported;
+
+      if (isSupported) {
+        console.log('Supported');
+      } else {
+        console.error('This browser is not supported by twilio-video.js.');
+      }
+
+      // Twilio Video Logic
+      let room;
+      let localParticipant;
+
+      // DOM Elements
+      const joinRoomBtn = document.getElementById('joinRoomBtn');
+      const identityInput = document.getElementById('identity');
+      const roomNameInput = document.getElementById('roomName');
+      const videoContainer = document.getElementById('videoContainer');
+      const localVideo = document.getElementById('localVideo');
+      const remoteVideo = document.getElementById('remote-video');
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      console.log(accessToken, refreshToken);
+      // Event listener for the Join Room button
+      //       joinRoomBtn.addEventListener('click', async () => {
+      //         const identity = identityInput.value.trim();
+      //         const roomName = roomNameInput.value.trim();
+      //
+      //         if (!identity || !roomName) {
+      //           alert('Please enter both your name and room name!');
+      //           return;
+      //         }
+      //
+      //         // Fetch the token from the backend
+      //         try {
+      //           const response = await axios.post('http://127.0.0.1:11914/rooms', {
+      //             name: roomName,
+      //           });
+      //           const tokenResponse = await axios.get(
+      //             `http://127.0.0.1:11914/twilio/access-token`,
+      //           );
+      //
+      //           const token = tokenResponse.data.token;
+      //
+      //           // Join the room using Twilio Video SDK
+      //           joinRoom(token, roomName);
+      //         } catch (error) {
+      //           console.error('Error fetching token:', error);
+      //           alert('Error joining the room.');
+      //         }
+      //       });
+      //
+      //       // Function to join the room
+      //       function joinRoom(token, roomName) {
+      //         videoContainer.classList.remove('hidden'); // Show the video container
+      //
+      //         connect(token, { name: roomName })
+      //           .then((newRoom) => {
+      //             room = newRoom;
+      //             localParticipant = room.localParticipant;
+      //
+      //             // Set up the local video track
+      //             const localTrack = Array.from(
+      //               localParticipant.videoTracks.values(),
+      //             )[0];
+      //             if (localTrack) {
+      //               localVideo.srcObject = localTrack.track.mediaStream;
+      //             }
+      //
+      //             // Add participants to the room
+      //             room.on('participantConnected', (participant) => {
+      //               const remoteVideoElement = document.createElement('video');
+      //               remoteVideoElement.autoplay = true;
+      //               remoteVideoElement.playsInline = true;
+      //               remoteVideoElement.classList.add('border', 'rounded-md');
+      //
+      //               participant.on('trackSubscribed', (track) => {
+      //                 if (track.kind === 'video') {
+      //                   remoteVideoElement.srcObject = track.mediaStream;
+      //                 }
+      //               });
+      //
+      //               remoteVideo.appendChild(remoteVideoElement);
+      //             });
+      //
+      //             room.on('participantDisconnected', (participant) => {
+      //               const videoElements = remoteVideo.querySelectorAll('video');
+      //               videoElements.forEach((element) => {
+      //                 if (
+      //                   element.srcObject &&
+      //                   element.srcObject.id === participant.sid
+      //                 ) {
+      //                   element.srcObject = null;
+      //                   element.remove();
+      //                 }
+      //               });
+      //             });
+      //           })
+      //           .catch((error) => {
+      //             console.error('Error connecting to room:', error);
+      //             alert('Error connecting to room.');
+      //           });
+      //       }
+    </script>
+  </body>
+</html>

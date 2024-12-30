@@ -13,10 +13,10 @@ import {
   AccountActivationRequest,
   AccountActivationRequestSchema,
 } from './admin.schema';
-import { VerifyAccessTokenMiddleware } from 'src/common/middlewares/verify-access-token.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
+import { VerifyAccessTokenMiddleware } from 'src/common/middlewares/verify-access-token.middleware';
 
 @Module({
   imports: [
@@ -63,6 +63,6 @@ export class AdminModule implements OnModuleInit, NestModule {
   async configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(VerifyAccessTokenMiddleware)
-      .forRoutes({ path: '/admin/accounts/users', method: RequestMethod.GET });
+      .forRoutes({ path: 'admin/accounts/users', method: RequestMethod.GET });
   }
 }

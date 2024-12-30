@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Gender } from 'src/common/enums/gender.enum';
-import { RateType } from 'src/common/enums/rate-type.enum';
 import { Qualification } from 'src/common/enums/qualification.enum';
 import { City } from 'src/common/enums/city.enum';
 import { Grade } from 'src/common/enums/grade.enum';
@@ -20,82 +19,46 @@ export type UserDocument = Tutor & Student & User & Document;
 @Schema({
   timestamps: true,
   discriminatorKey: 'type',
-  // toJSON: {
-  //   transform: (doc, ret) => {
-  //     if (!ret.gender) {
-  //       delete ret.gender;
-  //     }
-  //     if (!ret.city) {
-  //       delete ret.city;
-  //     }
-  //     // if (!ret.rateType) {
-  //     //   delete ret.rateType;
-  //     // }
-  //     // if (!ret.rates) {
-  //     //   delete ret.rates;
-  //     // }
-  //     // if (!ret.experience) {
-  //     //   delete ret.experience;
-  //     // }
-  //     // if (!ret.qualification) {
-  //     //   delete ret.qualification;
-  //     // }
-  //     // if (!ret.availability) {
-  //     //   delete ret.availability;
-  //     // }
-  //     if (!ret.grade) {
-  //       delete ret.grade;
-  //     }
-  //     if (!ret.interest) {
-  //       delete ret.interest;
-  //     }
-  //     if (!ret.tutors) {
-  //       delete ret.tutors;
-  //     }
-  //     if (!ret.students) {
-  //       delete ret.students;
-  //     }
-  //     return ret;
-  //   },
-  // },
-  // toObject: {
-  //   transform: (doc, ret) => {
-  //     if (!ret.gender) {
-  //       delete ret.gender;
-  //     }
-  //     if (!ret.city) {
-  //       delete ret.city;
-  //     }
-  //     // if (!ret.rateType) {
-  //     //   delete ret.rateType;
-  //     // }
-  //     // if (!ret.rates) {
-  //     //   delete ret.rates;
-  //     // }
-  //     // if (!ret.experience) {
-  //     //   delete ret.experience;
-  //     // }
-  //     // if (!ret.qualification) {
-  //     //   delete ret.qualification;
-  //     // }
-  //     // if (!ret.availability) {
-  //     //   delete ret.availability;
-  //     // }
-  //     if (!ret.grade) {
-  //       delete ret.grade;
-  //     }
-  //     if (!ret.interest) {
-  //       delete ret.interest;
-  //     }
-  //     if (!ret.tutors) {
-  //       delete ret.tutors;
-  //     }
-  //     if (!ret.students) {
-  //       delete ret.students;
-  //     }
-  //     return ret;
-  //   },
-  // },
+  toJSON: {
+    transform: (doc, ret) => {
+      if (!ret.gender) {
+        delete ret.gender;
+      }
+      if (!ret.city) {
+        delete ret.city;
+      }
+      if (!ret.plans) {
+        delete ret.plans;
+      }
+      if (!ret.tutors) {
+        delete ret.tutors;
+      }
+      if (!ret.students) {
+        delete ret.students;
+      }
+      return ret;
+    },
+  },
+  toObject: {
+    transform: (doc, ret) => {
+      if (!ret.gender) {
+        delete ret.gender;
+      }
+      if (!ret.city) {
+        delete ret.city;
+      }
+      if (!ret.plans) {
+        delete ret.plans;
+      }
+      if (!ret.tutors) {
+        delete ret.tutors;
+      }
+      if (!ret.students) {
+        delete ret.students;
+      }
+      return ret;
+    },
+  },
 })
 export class User {
   /**
@@ -196,13 +159,29 @@ export class Student extends User {
   /**
    * List of student interests (e.g., Mathematics, Sports)
    */
-  @Prop({ type: [String], enum: Interest, required: true })
+  @Prop({
+    type: [String],
+    enum: Interest,
+    required: true,
+    validate: {
+      validator: (value: string[]) => {
+        return value && value.length > 0;
+      },
+      message: 'Interests cannot be empty',
+    },
+  })
   interests: Interest[];
+
+  @Prop({ type: Types.ObjectId, ref: 'Customer', default: undefined })
+  customer?: Types.ObjectId;
+
+  @Prop({ type: [Types.ObjectId], ref: 'Subscription', default: undefined })
+  subscriptions?: Types.ObjectId[];
 
   /**
    * Array of ObjectIds referencing the tutors associated with the student
    */
-  @Prop({ type: [Types.ObjectId], ref: 'Tutor' })
+  @Prop({ type: [Types.ObjectId], ref: 'Tutor', default: undefined })
   tutors?: Types.ObjectId[];
 }
 
@@ -217,12 +196,6 @@ export const StudentSchema = SchemaFactory.createForClass(Student);
 @Schema()
 export class Tutor extends User {
   /**
-   * Rates charged by the tutor (e.g., 1000 PKR per hour)
-   */
-  @Prop({ type: Number, required: true })
-  rates: number;
-
-  /**
    * Number of years of teaching experience
    */
   @Prop({ type: Number, required: true })
@@ -234,27 +207,38 @@ export class Tutor extends User {
   @Prop({ type: String, enum: Qualification, required: true })
   qualification: Qualification;
 
-  @Prop({ type: [String], enum: Interest })
+  @Prop({ type: [String], enum: Interest, default: undefined })
   subjects?: Interest[];
 
-  /**
-   * Rate type (Hourly, Monthly, etc.)
-   * Refers to the RateType enum
-   */
-  @Prop({ type: String, enum: RateType, default: RateType.MONTHLY })
-  rateType: RateType;
+  @Prop({ type: [Types.ObjectId], ref: 'Product', default: undefined })
+  products?: Types.ObjectId[];
 
+  @Prop({ type: [Types.ObjectId], ref: 'Price', default: undefined })
+  prices?: Types.ObjectId[];
   /**
    * Array of ObjectIds referencing the students taught by the tutor
    */
-  @Prop({ type: [Types.ObjectId], ref: 'Student' })
+  @Prop({ type: [Types.ObjectId], ref: 'Student', default: undefined })
   students?: Types.ObjectId[];
 
   /**
    * Array of availability slots (e.g., 'Monday 2-4 PM')
    */
-  @Prop({ type: [String], enum: Availability, required: true })
+  @Prop({
+    type: [String],
+    enum: Availability,
+    required: true,
+    validate: {
+      validator: (value: string[]) => {
+        return value && value.length > 0;
+      },
+      message: 'Availability cannot be empty',
+    },
+  })
   availability: Availability[];
+
+  @Prop({ type: [Types.ObjectId], ref: 'Request', default: undefined })
+  requests?: Types.ObjectId[];
 }
 
 // Create schema for the Tutor class
